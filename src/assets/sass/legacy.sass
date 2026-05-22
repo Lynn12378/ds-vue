@@ -1,0 +1,1056 @@
+// ============================================================
+// Variables
+// ============================================================
+
+// Colors - Green theme
+$color-green-light:       #C7E49C
+$color-green-mid:         #96B469
+$color-green-dark:        #6B8D6D
+$color-green-darker:      #2B4B21
+$color-green-arrow:       #4F6828
+$color-green-text:        #006600
+$color-green-bright:      #339900
+$color-green-border:      #ADC891
+$color-green-border2:     #669027
+$color-green-bg1:         #F2F9EC
+$color-green-title:       #D8F466
+$color-green-btn-border:  #44774A
+
+// Colors - Yellow theme
+$color-yellow-0:          #DEC87C
+$color-yellow-1:          #EEF1A7
+$color-yellow-2:          #FAFBE1
+$color-yellow-3:          #FCFDEE
+$color-yellow-gold:       #EECE6C
+$color-yellow-btn:        #B27000
+$color-yellow-bg:         #FFFFCC
+
+// Colors - Blue theme
+$color-blue-1:            #99CCFF
+$color-blue-2:            #DFEFFF
+$color-blue-3:            #F0F8FF
+$color-blue-link:         #0066CC
+$color-blue-link2:        #0066FF
+$color-blue-dark:         #003366
+$color-blue-66b3:         #66B3FF
+$color-blue-f2ea:         #F2EAC2
+$color-blue-cce2:         #CCE2F8
+$color-blue-e7f3:         #E7F3F9
+
+// Colors - Neutral
+$color-white:             #FFFFFF
+$color-black:             #000000
+$color-red:               #FF0000
+$color-red-dark:          #990000
+$color-orange:            #FF9900
+$color-orange-link:       #FC6
+$color-orange-select:     #FAC574
+$color-gray-border:       #999999
+$color-gray-light:        #E1E1E1
+$color-gray-text:         #6F6F88
+$color-gray-bg:           #e8e4dc
+$color-gray-bg2:          #EEE
+$color-gray-bg3:          #CCC
+$color-gray-bg4:          #444
+$color-green-supporter:   #006600
+
+// Font stacks
+$font-stack-primary:  'PMingLiU', 'MingLiU', 'Microsoft JhengHei', 'Meiryo', 'Arial', 'Arial Unicode MS', 'Helvetica', 'sans-serif', 'Verdana', 'Trebuchet MS'
+$font-stack-jh:       'Microsoft JhengHei', 'Meiryo', 'PMingLiU', 'MingLiU', 'Arial', 'Arial Unicode MS', 'Helvetica', 'sans-serif', 'Verdana', 'Trebuchet MS'
+$font-stack-calendar: Arial, Helvetica, sans-serif
+
+// Font sizes
+$font-size-base: 10pt
+$font-size-sm:   9pt
+$font-size-md:   12pt
+$font-size-lg:   13pt
+$font-size-px-sm:   11px
+$font-size-px-base: 12px
+$font-size-px-md:   14px
+
+// Button gradients
+$btn-gradient-top:    #eff6ec
+$btn-gradient-mid:    #ffffff
+$btn-gradient-bottom: #cfe4c1
+$btn-red-top:         #fff0f0
+$btn-red-bottom:      #ffdddd
+
+// ============================================================
+// Placeholders
+// ============================================================
+
+%tbbox-borders
+  border-right-color:  $color-green-dark
+  border-bottom-color: $color-green-dark
+  border-left-color:   $color-white
+  border-top-color:    $color-white
+
+%btn-gradient
+  background: url(../../../images/CM/bt_bg.gif)
+  background: -moz-linear-gradient(top, $btn-gradient-top 0%, $btn-gradient-mid 40%, $btn-gradient-bottom 100%)
+  background: -webkit-linear-gradient(top, $btn-gradient-top 0%, $btn-gradient-mid 40%, $btn-gradient-bottom 100%)
+  background: linear-gradient(to bottom, $btn-gradient-top 0%, $btn-gradient-mid 40%, $btn-gradient-bottom 100%)
+  background: url(../../../images/CM/bt_bg.gif) \9
+
+// ============================================================
+// Base
+// ============================================================
+
+body
+  scrollbar-face-color:       $color-green-light
+  scrollbar-highlight-color:  $color-white
+  scrollbar-3dlight-color:    $color-green-light
+  scrollbar-darkshadow-color: $color-green-darker
+  scrollbar-shadow-color:     $color-green-mid
+  scrollbar-arrow-color:      $color-green-arrow
+  scrollbar-track-color:      $color-green-light
+  font-family:                $font-stack-primary
+  margin:                     0px
+
+input,
+textarea
+  // 針對輸入的input物件設置css。解決ie11顯示難字問題
+  font-family: $font-stack-primary
+
+fieldset
+  padding:       1em
+  margin-bottom: 0.5em
+
+label
+  font-weight: bold
+
+// ============================================================
+// Links
+// ============================================================
+
+a
+  &:link
+    font-size:       $font-size-base
+    color:           $color-blue-link
+    text-decoration: underline
+
+  &:hover
+    font-size:       $font-size-base
+    color:           $color-orange
+    text-decoration: underline
+
+  &:visited
+    font-size:       $font-size-base
+    color:           $color-blue-link2
+    text-decoration: underline
+
+// ============================================================
+// Typography utilities
+// ============================================================
+
+.text10
+  font-size:   $font-size-base
+  line-height: normal
+  color:       $color-black
+  font-weight: normal
+
+.text13
+  font-size:   $font-size-lg
+  line-height: normal
+  color:       $color-black
+  font-weight: normal
+
+.textError
+  font-size:   $font-size-md
+  color:       $color-red
+  font-weight: bold
+
+.textWarning
+  font-size:   $font-size-md
+  color:       #FFCC00
+  font-weight: bold
+
+.textNotify
+  font-size:   $font-size-md
+  color:       blue
+  font-weight: bold
+
+.textGray
+  font-size: $font-size-base
+  color:     $color-gray-text
+
+.textGreen
+  font-size: $font-size-base
+  color:     #00AA00
+
+.textBlue
+  font-size:  $font-size-base
+  background: $color-blue-1
+  color:      $color-blue-link
+  border:     dotted 0
+
+.textBlue2
+  font-size:  $font-size-base
+  background: $color-blue-2
+  color:      $color-black
+  border:     dotted 0
+
+.textBlue3
+  font-size:  $font-size-base
+  background: $color-blue-3
+  color:      $color-black
+  border:     dotted 0
+
+.textYellow
+  font-size:  $font-size-base
+  background: $color-yellow-1
+  color:      $color-black
+  border:     dotted 0
+
+.textYellow2
+  font-size:  $font-size-base
+  background: $color-yellow-2
+  color:      $color-black
+  border:     dotted 0
+
+.textRed
+  font-size: $font-size-base
+  color:     $color-red
+
+.textRedBold
+  font-size:   $font-size-base
+  font-weight: bold
+  color:       $color-red
+
+.textBold
+  font-size:   $font-size-base
+  font-weight: bold
+  line-height: 21px
+
+.subTitle
+  font-size:      $font-size-base
+  font-weight:    bold
+  color:          $color-green-bright
+  letter-spacing: 3pt
+
+.menuDisable
+  font-size:       $font-size-base
+  color:           #C4944D
+  text-decoration: none
+
+// ============================================================
+// Input / TextBox styles
+// ============================================================
+
+.textBox
+  border-top-width:    1px
+  border-right-width:  1px
+  border-bottom-width: 1px
+  border-left-width:   1px
+  border-top-style:    solid
+  border-right-style:  solid
+  border-bottom-style: solid
+  border-left-style:   solid
+  border-top-color:    $color-green-border
+  border-right-color:  $color-green-bg1
+  border-bottom-color: $color-green-bg1
+  border-left-color:   $color-green-border
+  font-size:           $font-size-base
+  text-decoration:     none
+
+.textBox2
+  font-size:       $font-size-px-base
+  text-decoration: none
+  letter-spacing:  1pt
+  border-top:      1px solid $color-gray-border
+  border-right:    1px solid $color-gray-light
+  border-bottom:   1px solid $color-gray-light
+  border-left:     1px solid $color-gray-border
+
+.textBox3
+  font-size:        14px
+  color:            #0000FF
+  text-decoration:  none
+  letter-spacing:   1pt
+  border-style:     none
+  background-color: $color-yellow-2
+  border-top:       1px solid $color-gray-border
+  border-right:     1px solid $color-gray-light
+  border-bottom:    1px solid $color-gray-light
+  border-left:      1px solid $color-gray-border
+
+.textBox4
+  font-size:       $font-size-px-base
+  text-decoration: none
+  letter-spacing:  1pt
+  border-top:      1px solid $color-gray-border
+  border-right:    1px solid $color-gray-light
+  border-bottom:   1px solid $color-gray-light
+  border-left:     1px solid $color-gray-border
+  text-align:      right
+
+.textBox5
+  font-size:        $font-size-base
+  text-align:       center
+  text-decoration:  none
+  border-style:     none
+  background-color: $color-blue-3
+
+.textDisable
+  font-size:        $font-size-px-base
+  text-decoration:  none
+  letter-spacing:   1pt
+  background-color: transparent
+  border:           none
+
+.textBoxDisable
+  font-size:        $font-size-px-base
+  text-decoration:  none
+  letter-spacing:   1pt
+  border-top:       1px solid $color-gray-border
+  border-right:     1px solid $color-gray-light
+  border-bottom:    1px solid $color-gray-light
+  border-left:      1px solid $color-gray-border
+  background-color: $color-yellow-bg
+
+.textBoxDisable2
+  font-size:        $font-size-px-base
+  color:            #0000FF
+  text-decoration:  none
+  letter-spacing:   1pt
+  border-top:       1px solid $color-gray-border
+  border-right:     1px solid $color-gray-light
+  border-bottom:    1px solid $color-gray-light
+  border-left:      1px solid $color-gray-border
+  background-color: $color-yellow-bg
+
+.textBoxDisableB
+  font-size:        $font-size-px-base
+  text-decoration:  none
+  letter-spacing:   1pt
+  border-top:       1px solid $color-gray-border
+  border-right:     1px solid $color-gray-light
+  border-bottom:    1px solid $color-gray-light
+  border-left:      1px solid $color-gray-border
+  background-color: $color-yellow-bg
+  color:            $color-red
+  text-align:       right
+
+.textBoxNew
+  font-size:        $font-size-px-sm
+  color:            #666666
+  background-color: $color-white
+  padding:          1px 1px 1px 3px
+  border:           1px solid #8F9D7B
+
+.listType
+  font-size:     $font-size-base
+  border-top:    1px solid $color-gray-border
+  border-right:  1px solid $color-gray-light
+  border-bottom: 1px solid $color-gray-light
+  border-left:   1px solid $color-gray-border
+
+// IE11 disabled states
+input[type="text"]:disabled,
+input[type="date"]:disabled,
+input[type="number"]:disabled,
+input[type="password"]:disabled,
+input[type="button"]:disabled,
+button:disabled
+  color:       #999
+  text-shadow: #FFF 1px 1px 0px
+
+input[type=checkbox],
+input[type=radio]
+  color: #BBB
+
+input:read-only,
+textarea:read-only
+  background-color: transparent
+  border:           none
+
+// ============================================================
+// Button styles
+// ============================================================
+
+.button
+  @extend %btn-gradient
+  font-size:      $font-size-base
+  border:         1px solid $color-green-dark
+  color:          $color-green-text
+  white-space:    nowrap
+  line-height:    19px
+  height:         21px
+  vertical-align: middle
+  margin:         2px
+  padding:        0px
+
+.button1
+  @extend %btn-gradient
+  font-size:      $font-size-sm
+  border:         1px solid $color-green-dark
+  color:          $color-green-btn-border
+  height:         17px
+  line-height:    16px
+  vertical-align: middle
+  margin:         2px
+  padding:        0px
+
+.buttonRed
+  font-size:      $font-size-base
+  border:         1px solid $color-red-dark
+  color:          $color-red-dark
+  white-space:    nowrap
+  line-height:    19px
+  height:         21px
+  vertical-align: middle
+  margin:         2px
+  padding:        0px
+  background:     $btn-red-bottom
+  background:     -moz-linear-gradient(top, $btn-red-top 0%, $color-white 35%, $btn-red-bottom 100%)
+  background:     -webkit-linear-gradient(top, $btn-red-top 0%, $color-white 35%, $btn-red-bottom 100%)
+  background:     linear-gradient(to bottom, $btn-red-top 0%, $color-white 35%, $btn-red-bottom 100%)
+  filter:         progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff0f0', endColorstr='#ffdddd', GradientType=0)
+  -background:    $btn-red-bottom
+  -filter:        alpha(opacity=20, finishopacity=90, style=1, startx=0, starty=-50, finishx=0, finishy=200)
+
+:root
+  .button,
+  .button1,
+  .buttonRed
+    padding: 0px 10px
+
+// ============================================================
+// Table / grid
+// ============================================================
+
+table.grid
+  font-size:        $font-size-base
+  border:           1px solid $color-green-light
+  border-collapse:  collapse
+  background-color: $color-white
+
+  *
+    font-size: $font-size-base
+
+  td
+    margin:      0px
+    padding:     2px
+    padding-top: 5px
+    border:      1px solid $color-green-light
+
+  th
+    margin:      0px
+    padding:     2px
+    padding-top: 5px
+    border:      1px solid $color-green-light
+
+// ============================================================
+// tbBox family
+// ============================================================
+
+.tbBox
+  @extend %tbbox-borders
+  border-top-width:    0px
+  border-right-width:  1px
+  border-bottom-width: 0px
+  border-left-width:   1px
+  border-top-style:    solid
+  border-right-style:  solid
+  border-bottom-style: solid
+  border-left-style:   solid
+  font-size:           $font-size-base
+  background-color:    $color-green-light
+
+.tbBox2
+  @extend %tbbox-borders
+  background-color:    $color-green-light
+  border-top-width:    1px
+  border-right-width:  1px
+  border-bottom-width: 1px
+  border-left-width:   1px
+  border-top-style:    solid
+  border-right-style:  solid
+  border-bottom-style: solid
+  border-left-style:   solid
+  font-size:           $font-size-base
+  text-indent:         1pt
+  padding:             1pt
+  line-height:         21px
+
+.tbBox3
+  @extend %tbbox-borders
+  background-color:    $color-yellow-gold
+  border-top-width:    1px
+  border-right-width:  1px
+  border-bottom-width: 1px
+  border-left-width:   1px
+  border-top-style:    solid
+  border-right-style:  solid
+  border-bottom-style: solid
+  border-left-style:   solid
+  font-size:           $font-size-base
+  text-decoration:     none
+  height:              20px
+
+.tbBox4
+  @extend %tbbox-borders
+  border-top-width:    1px
+  border-right-width:  1px
+  border-bottom-width: 1px
+  border-left-width:   1px
+  border-top-style:    solid
+  border-right-style:  solid
+  border-bottom-style: solid
+  border-left-style:   solid
+  font-size:           $font-size-base
+
+.tbBoxDK
+  @extend %tbbox-borders
+  background-color: $color-green-light
+  font-size:        $font-size-base
+  text-indent:      1pt
+  padding:          1pt
+  line-height:      21px
+
+.tbRed
+  background-color: $color-red
+  color:            $color-white
+
+.tbYellow0
+  background-color: $color-yellow-0
+
+.tbYellow
+  background-color: $color-yellow-1
+
+.tbYellow2
+  background-color: $color-yellow-2
+
+.tbYellow3
+  background-color: $color-yellow-3
+
+.tbBlue
+  background-color: $color-blue-1
+
+.tbBlue2
+  background-color: $color-blue-2
+
+.tbBlue3
+  background-color: $color-blue-3
+
+.tbRec
+  background-color: $color-yellow-2
+  font-size:        $font-size-base
+
+.tbLayer
+  border-top-width:    0px
+  border-right-width:  1px
+  border-bottom-width: 1px
+  border-left-width:   1px
+  border-top-style:    solid
+  border-right-style:  solid
+  border-bottom-style: solid
+  border-left-style:   solid
+  border-right-color:  $color-blue-dark
+  border-bottom-color: $color-blue-dark
+  border-left-color:   $color-blue-dark
+
+.self_display_yellow
+  background: "#FAFBE1"
+  color:      $color-black
+  border:     dotted 0
+
+// ============================================================
+// BoxCase (popup)
+// ============================================================
+
+.BoxCase
+  visibility:     hidden
+  position:       absolute
+  border-right:   2px outset
+  padding-right:  6px
+  border-top:     2px outset
+  padding-left:   6px
+  background:     $color-gray-bg
+  padding-bottom: 6px
+  border-left:    2px outset
+  color:          $color-black
+  padding-top:    6px
+  border-bottom:  2px outset
+  text-align:     left
+  font-size:      13px
+  line-height:    17px
+  letter-spacing: 2px
+
+// ============================================================
+// Validation
+// ============================================================
+
+input.required,
+textarea.required
+  border: 1px solid #00A8E6
+
+.validation-failed,
+.m_validation-failed
+  border: 1px solid #FF3300
+  color:  #FF3300
+
+.validation-passed
+  border: 1px solid #00CC00
+  color:  $color-black
+
+.validator-failed,
+.m_validator-failed
+  background: #FFB0AF
+
+.validator-passed
+  border: 1px solid #3CF
+  color:  $color-black
+
+.validation-advice
+  margin:           5px 0
+  padding:          5px
+  background-color: #FF3300
+  color:            $color-white
+  font-weight:      bold
+
+.custom-advice
+  margin:           5px 0
+  padding:          5px
+  background-color: #C8AA00
+  color:            $color-white
+  font-weight:      bold
+
+// ============================================================
+// Form layout utilities
+// ============================================================
+
+.form-row
+  clear:   both
+  padding: 0.5em
+
+.field-label
+
+.field-widget
+
+// ============================================================
+// Panel / tabs
+// ============================================================
+
+.panel
+  clear:   both
+  display: none
+  border:  3px solid $color-gray-bg3
+  padding: 1em
+
+  &.active-tab-body
+    display: block
+
+// ============================================================
+// Calendar
+// ============================================================
+
+.calendarTable
+  background-color: $color-gray-bg4
+  border:           3px double $color-gray-bg3
+  position:         absolute
+  z-index:          10
+
+  table table
+    border: none
+
+  th
+    margin:           0px
+    border-collapse:  collapse
+    border:           medium none $color-black
+    background-color: $color-white
+    font-family:      $font-stack-calendar
+    font-size:        14px
+    color:            $color-black
+    text-align:       center
+    vertical-align:   middle
+    font-weight:      bold
+
+  td
+    border-collapse:  collapse
+    border:           1px solid $color-white
+    background-color: $color-gray-bg2
+    font-family:      $font-stack-calendar
+    font-size:        14px
+    color:            $color-black
+    text-align:       center
+    vertical-align:   middle
+    overflow:         hidden
+
+  .subTitle
+    background:  $color-white
+    color:       $color-black
+    font-weight: bold
+
+  .colorGray
+    color:      $color-white
+    background: $color-gray-bg3
+
+  .selectBlock
+    background:   $color-orange-select
+    color:        $color-black
+    border-color: $color-orange-link
+
+  .linkCursor
+    cursor: pointer
+
+    :hover
+      font-size: 16px
+
+.calendarImg
+  background: url('../../../images/CM/calendar.gif') no-repeat
+  display:    inline-block
+  width:      16px
+  height:     16px
+
+// ============================================================
+// Grid icon overrides (rb)
+// ============================================================
+
+.x-grid-del_icon
+  background-image: url("/RBWeb/images/CM/icon_del.gif") !important
+
+.x-grid-index_icon
+  background-image: url("/RBWeb/images/CM/gif06.gif") !important
+
+// ============================================================
+// PageUI layout system
+// ============================================================
+
+.PageUI
+  width:      100%
+  height:     auto
+  padding:    0px
+  margin:     0px
+  border:     0px
+  background: #F0FBC6
+  font-size:  $font-size-base
+
+.titleBar
+  z-index:  150
+  position: relative
+  top:      expression((window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) + 'px')
+
+.borderTop
+  background-image:    url(../../../images/CM/border_03.gif)
+  background-repeat:   repeat-x
+  background-position: top center
+  height:              4px
+
+.borderTopLeft
+  background-image:    url(../../../images/CM/border_01.gif)
+  background-repeat:   repeat-y
+  background-position: left center
+  width:               4px
+
+.borderTopRight
+  background-image:    url(../../../images/CM/border_02.gif)
+  background-repeat:   repeat-y
+  background-position: right center
+  width:               4px
+
+.borderText
+  font-size:      $font-size-base
+  font-weight:    bold
+  color:          $color-green-bright
+  letter-spacing: 3pt
+  padding:        3px 6px 1px 6px
+  margin:         0px
+  height:         25px
+  border-bottom:  1px solid $color-green-title
+
+.overDiv
+  overflow: auto
+
+.subTable
+  padding:        5px 10px 5px 10px
+  vertical-align: top
+
+  .overDiv
+    overflow-x: visible
+    overflow-y: auto
+    padding:    0px 3px 0px 0px
+
+// ============================================================
+// Contents / contentTable system
+// ============================================================
+
+.contents
+  border:     1px solid $color-black
+  width:      100%
+  background: $color-white
+
+  .inputText,
+  textarea,
+  select
+    font-size:       $font-size-px-base
+    text-decoration: none
+    letter-spacing:  1pt
+    border:          1px solid $color-green-dark
+    border-top-color:  #096
+    border-left-color: #096
+    padding:         1px
+
+.contentsTh
+  background:          $color-green-light
+  font-size:           $font-size-base
+  margin-left:         3px
+  margin-right:        3px
+  text-align:          left
+  line-height:         21px
+  border:              solid 1px
+  border-right-color:  $color-green-dark
+  border-bottom-color: $color-green-dark
+  border-left-color:   $color-white
+  border-top-color:    $color-white
+
+.contentsTd
+  border-top:     #000 1px solid
+  padding:        4px
+  padding-bottom: 0px
+
+.contentDiv
+  border:              #000 solid 1px
+  border-bottom-width: 0px
+  margin-bottom:       2px
+  padding:             0px
+  width:               100%
+  vertical-align:      middle
+  border-right-color:  $color-green-border2
+  border-left-color:   #EBFAEB
+  border-top-color:    #EBFAEB
+
+.contentDivTable
+  margin:  0px
+  padding: 0px
+  width:   100%
+
+.contentDivTh
+  background-color: $color-yellow-0
+  font-size:        $font-size-base
+  text-align:       center
+  font-weight:      bold
+  line-height:      20px
+  border-width:     0px
+  border-bottom:    #000 0px solid
+
+.contentDivTd
+  margin:              0px
+  padding:             0px
+  border-width:        0px
+  border-bottom:       #000 1px solid
+  border-bottom-color: $color-green-border2
+  background:          $color-green-light
+
+.contentTable
+  padding:     1px
+  border-top:  solid 1px $color-green-light
+  border-left: solid 1px $color-green-light
+  width:       100%
+
+  td
+    width:         auto
+    text-align:    left
+    padding:       1px
+    border-bottom: solid 1px $color-green-light
+    border-right:  solid 1px $color-green-light
+
+  .header
+    padding:    2px
+    background: $color-yellow-1
+    min-height: 16px
+    font-size:  $font-size-base
+
+  .content
+    background: $color-yellow-2
+    font-size:  $font-size-base
+
+    *
+      margin: 0px 1px 0px 1px
+
+  .buttons
+    background:     $color-yellow-1
+    vertical-align: middle
+
+.contentBlue
+  .header
+    background:  $color-blue-1
+    font-weight: bolder
+    text-align:  center
+
+  .content
+    background: $color-blue-2
+    text-align: center
+
+  .buttons
+    background: $color-blue-3
+    text-align: center
+
+.buttons
+  input
+    background-image: url(../../../images/CM/bt_bg.gif)
+    font-size:        $font-size-base
+    border:           1px solid $color-green-dark
+    color:            $color-green-text
+    height:           19px
+    margin:           2px
+    padding:          1px 8px 1px 8px
+
+// ============================================================
+// PaperUI
+// ============================================================
+
+.PaperUI
+  font-size:      $font-size-px-md
+  font-family:    $font-stack-jh
+  border-spacing: 0px
+  margin:         0px
+
+  a
+    font-size:       $font-size-px-md
+    font-family:     $font-stack-jh
+    text-decoration: underline
+
+    &:link
+      color:           #009
+      text-decoration: underline
+
+    &:hover
+      color: #F60
+
+    &:visited
+      color: #009
+
+  th
+    border:         solid $color-yellow-btn 0px
+    padding-top:    2px
+    padding-bottom: 2px
+    padding-left:   7px
+    padding-right:  7px
+    margin:         0px
+
+  td
+    border:         solid $color-yellow-btn 0px
+    padding-top:    2px
+    padding-bottom: 2px
+    padding-left:   7px
+    padding-right:  7px
+    margin:         0px
+
+  .allBorder
+    border-width: 1px
+
+  .topBorder
+    border-top-width: 1px
+
+  .bottomBorder
+    border-bottom-width: 1px
+
+  .leftBorder
+    border-left-width: 1px
+
+  .rightBorder
+    border-right-width: 1px
+
+  .headSetting1
+    background:  $color-blue-1
+    font-weight: bolder
+
+  .headSetting2
+    background:  $color-blue-66b3
+    font-weight: bolder
+
+  .recordSetting1_1
+    background: $color-blue-f2ea
+
+  .recordSetting1_2
+    background: $color-yellow-2
+
+  .recordSetting2_1
+    background: $color-blue-cce2
+
+  .recordSetting2_2
+    background: $color-blue-e7f3
+
+// ============================================================
+// pageSupporters widget
+// ============================================================
+
+span.pageSupporters
+  font-family:    $font-stack-jh
+  position:       relative
+  letter-spacing: 0px
+  white-space:    nowrap
+  text-align:     left
+  *display:       none
+
+  button#icon-button
+    padding:       1px 3px
+    margin-left:   5px
+    color:         $color-white
+    font-weight:   bold
+    border:        1px solid $color-green-supporter
+    border-radius: 3px
+    background:    $color-green-supporter
+    text-align:    center
+
+  div#personInChargeShowDiv
+    position:         absolute
+    top:              10px
+    right:            0px
+    z-index:          99
+    box-shadow:       #333 0px 0px 5px
+    background-color: $color-white
+    border:           1px solid $color-green-supporter
+    cursor:           default !important
+    display:          none
+
+  div.empty-msg
+    padding: 25px
+    color:   #666
+
+  div.support-group
+    margin: 10px
+
+  h3
+    text-align:      center
+    padding:         2px 25px
+    margin:          5px
+    color:           $color-green-supporter
+    border-bottom:   2px solid $color-green-supporter
+    border-collapse: collapse
+
+  div.supporter
+    margin:           5px
+    padding:          5px
+    border-collapse:  collapse
+    border-radius:    3px
+    background-color: $color-yellow-1
+    letter-spacing:   1px
+    color:            #666
+
+  div.supporter-div
+    padding-bottom: 3px
+
+  div.supporter-name
+    display:     inline-block
+    font-size:   1.5em
+    font-weight: bold
+    color:       #333
+
+  div.supporter-ext
+    display:        inline-block
+    padding-left:   10px
+    letter-spacing: 2px
+    color:          #333
+
+  div.supporter-memo
+    padding-top: 3px
+    margin-top:  3px
+    border-top:  1px solid $color-white
+
+  &.active div#personInChargeShowDiv
+    display: block
+
+#bar1 span.pageSupporters div#personInChargeShowDiv
+  top: 20px
