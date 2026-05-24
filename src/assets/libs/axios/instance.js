@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const customAxios = axios.create({
-  baseURL: import.meta.env.VITE_API_HOST,
+  baseURL: import.meta.env.VITE_API_HOST, // replace dispatcher
 });
 
 axios.interceptors.request.use(
