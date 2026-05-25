@@ -7,16 +7,29 @@ description: JSP 翻新 Vue3 Server-side 資料補償規範
 ## Core Principles
 
 **REQUIRED**
-- JSP 內透過後端注入的資料必須補償至 Vue SFC，確保業務行為等價還原
-- 必須封裝 `doPrompt` 函式來處理資料補償邏輯，並在 `onMounted` 生命週期呼叫
-- doPrompt 使用 `customAxios(/Bean_Name/prompt)` 來模擬 JSP 頁面初始資料請求，並將回應資料對應補償至 Vue SFC 的對應變數(key 必須對應 JSP 原始碼資料名稱)
-- 所有補償資料必須標注 `FIXME: 資料來源待確認`，以利後續人工確認與維護
+- JSP 後端注入資料必須於 `onMounted` 呼叫 `doPrompt` 補償至 Vue SFC
+- `doPrompt` 使用 `customAxios.get('{Bean_Name}/prompt')` 取得後端資料
+- 補償變數的 key 必須對應 JSP 原始碼的資料名稱
+- 所有補償資料必須標注 `// FIXME: 資料來源待確認`
+- `${param.xxx}` 不屬於補償對象，依 R1 直接翻新為 `route.query.xxx`
 
 **FORBIDDEN**
-- 禁止將內部宣告的變數視為資料補償對象
+- 禁止將頁面內部宣告的 JS 變數視為補償對象
 - 禁止在 `doPrompt` 以外的函式處理資料補償邏輯
+- 禁止自行推測補償資料的結構或型別
+
+---
 
 ## Example
+
+```jsp
+<%-- JSP --%>
+<select name="SELECT_LIST" id="SELECT_LIST">
+  <c:forEach var="map" items="${SELECT_LIST}">
+    <option value="${map.key}">${map.value}</option>
+  </c:forEach>
+</select>
+```
 
 ```js
 // DSX01100.vue
@@ -32,7 +45,7 @@ const doPrompt = async () => {
   selectList.value = resp.SELECT_LIST
 }
 
-onMounted(() => {
+onMounted(async () => {
   await doPrompt()
 })
 ```

@@ -6,25 +6,34 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 
 ## Core Principles
 
-**REQUIRED**
-- Yup 規則一律具名引用
-- 優先使用 CathayValidateRules.js
+**引用規範**
+- Yup 規則一律具名引用（`import { object, string } from 'yup'`）
+- 優先使用 CathayValidateRules.js（`import '@/assets/libs/CathayValidateRules.js'`）
+
+**Schema 規範**
 - schema key 必須對應原始欄位 `id`/`name`（camelCase）
 - schema 只納入有驗證規則的欄位
+- 全局驗證規則必須依 `CSS Class → Yup Mapping` 對照表轉換
+- `disabled` 欄位依 `TODO Templates` 標記
+
+**useForm / useField 規範**
 - 無論有無驗證規則，form 內所有欄位一律 `useField` 宣告
 - `useForm` 所有欄位必須設定 `initialValues` 與 `validateOnMount: false`
-- 全局驗證規則必須依 `CSS Class → Yup Mapping` 對照表轉換
+
+**自訂規則改寫規範**
 - JSP 自訂規則（`add` / `addAllThese`）識別為頁面內自訂驗證邏輯，必須抽出為頁面內共用箭頭函式，再以 `.test()` 引用，函式名稱對應原始規則名稱
 - 跨欄驗證邏輯需改寫為透過 `this.parent.{fieldName}` 存取關聯欄位值，不得直接讀取 DOM
+
+**錯誤訊息規範**
 - 錯誤訊息必須來自 JSP 原始碼
 - 無對應規則依 `TODO Templates` 處理
-- `disabled` 欄位依 `TODO Templates` 標記
+
+**表單狀態規範**
 - **IF** 送出表單前（query / submit）**THEN** 直接移除 `valid.reset()`
 - **IF** 清除表單值（clear）**THEN** `resetForm()`
 
 **FORBIDDEN**
 - 禁止新增 JSP 原始碼中不存在的驗證規則
-- 禁止新增欄位沒有的驗證規則
 - 禁止自行推測或撰寫錯誤訊息
 - 禁止修改 CSS class 對應的驗證邏輯
 - 禁止使用 `addMethod`
@@ -34,7 +43,7 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 
 ## CSS Class → Yup Mapping
 
-> 所有錯誤訊息已內建於 yup，使用時無須額外指定錯誤訊息
+> 以下所有錯誤訊息已內建於 yup，使用時無須額外指定錯誤訊息
 
 | CSS class | 錯誤訊息 | Yup 對應 |
 |---|---|---|
