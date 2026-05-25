@@ -1,4 +1,4 @@
-const routes = [
+export const routes = [
     // 請替換為實際路徑
     // {
     //     path: `{Module}`,
@@ -12,5 +12,3 @@ const routes = [
     //     ]
     // }
 ];
-
-export default { routes };
