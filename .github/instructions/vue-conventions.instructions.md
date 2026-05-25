@@ -1,5 +1,27 @@
 # Vue Conventions
 
+## 專案目錄
+
+```
+src/
+├── assets/
+│   ├── composables/                  # 共用 composable
+│   ├── font/                         # 字型資源
+│   ├── libs/                         # 外部函式庫（如 customAxios）
+│   │    ├── axios/instance.js        # HTTP 請求封裝
+│   │    └── CathayValidateRules.js   # 表單驗證規則
+│   ├── sass/                         # SCSS 樣式
+│   └── utils/                        # 工具函式（如：格式化）
+├── components/                       # 可重用元件
+├── router/                           # 路由設定
+├── store/                            # Pinia 狀態管理
+├── views/                            # 頁面元件
+│   ├── {Module}/                     # 模組資料夾（例：A3）
+│   │    └── {FileName}.vue           # Vue SFC（例：DSA30900.vue）
+│   └── ...
+└── App.vue
+```
+
 ## Core Principles
 
 - **REQUIRED**：
