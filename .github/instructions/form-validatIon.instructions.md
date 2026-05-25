@@ -78,6 +78,8 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 | `checkROCPassport` | 見 TODO Templates | 護照號碼格式錯誤 |
 | `checkID` | 見 TODO Templates | 證件格式錯誤 |
 
+**FORBIDDEN**：若無需覆蓋錯誤，禁止於 yup 規則中額外指定錯誤訊息（如：`string().required('不可空白')`），必須使用 yup 內建錯誤訊息
+
 ---
 
 ## TODO Templates
