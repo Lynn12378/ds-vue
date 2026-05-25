@@ -203,7 +203,7 @@ const use{ResourceName} = () => {
 ---
 
 **Step 2: 建立 Fallback Composables**
-- 依 Step 1 表二，於 `<script setup>` 最底部建立所有 Fallback composable
+- 依 Step 1 表二，於 `<script setup>` 建立所有 Fallback composable 並以 `region` + `endregion` 包裹
 - 方法名稱必須對應表二原始方法名稱
 - 確保後續翻新步驟可直接引用
 
