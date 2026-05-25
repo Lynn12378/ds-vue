@@ -13,7 +13,7 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 **Schema 規範**
 - schema key 必須對應原始欄位 `id`/`name`（camelCase）
 - schema 只納入有驗證規則的欄位
-- 全局驗證規則必須依 `CSS Class → Yup Mapping` 對照表轉換
+- 全局驗證規則必須依 DOM 的 `CSS Class → Yup Mapping` 對照表轉換為 yup 規則
 - `disabled` 欄位依 `TODO Templates` 標記
 
 **useForm / useField 規範**
@@ -45,38 +45,38 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 
 > 以下所有錯誤訊息已內建於 yup，使用時無須額外指定錯誤訊息
 
-| CSS class | 錯誤訊息 | Yup 對應 |
+| CSS class | Yup 對應 | 錯誤訊息 |
 |---|---|---|
-| `required` | 不可空白 | `string().required()` |
-| `validate-number` | 請輸入有效數字格式 | `string().validateNumber()` |
-| `validate-positive-number` | 請輸入有效正數 | `number().positive()` |
-| `validate-integer` | 請輸入有效整數 | `number().integer()` |
-| `validate-digits` | 請輸入有效正整數 | `number().positive().integer()` |
-| `validate-positive` | 請輸入大於零之有效正整數 | `number().positive().integer().min(1)` |
-| `validate-greater-than-zero` | 請輸入大於零之有效數字格式 | `number().moreThan(0)` |
-| `validate-positive-integer` | 請輸入大於零之有效整數 | `number().positive().integer()` |
-| `validate-alpha` | 請輸入英文字母 | `string().validateAlpha()` |
-| `validate-alphanum` | 請輸入有效文數字 | `string().matches(/^[\w\u4e00-\u9fa5]+$/, '請輸入有效文數字')` |
-| `validate-date` | 請輸入有效日期格式 | `string().validateDate()` |
-| `validate-date-db` | 有效日期格式為: YYYY-MM-DD | `string().validateDateDb()` |
-| `validate-email` | 請輸入有效電子郵件地址格式 | `string().email()` |
-| `validate-url` | 請輸入有效網址 | `string().url()` |
-| `validate-selection` | 請選擇 | `string().required()` |
-| `validate-ROCDate` | 請輸入正確的民國日期格式 | `string().validateROCDate()` |
-| `validate-ROCDate-Interval` | 日期起迄有誤 | 必須改為跨欄綁定，起日綁定：`string().validateROCDateMax('endField')` 迄日綁定：`string().validateROCDateMin('startField')` |
-| `validate-Date-Interval` | 日期起迄有誤 | 必須改為跨欄綁定，起日綁定：`string().validateROCDateMax('endField')` 迄日綁定：`string().validateROCDateMin('startField')` |
-| `validate-DateYM` | 請輸入正確之西元年月格式 | `string().validateDateYM()` |
-| `validate-ROCDateYM` | 請輸入正確之民國年月格式 | `string().validateROCDateYM()` |
-| `checkInputLength` | 輸入值超出長度限制 | `string().max(maxLength)` |
-| `checkROCID` | 身份證字號格式錯誤 | `string().validatorROCID()` |
-| `checkROCARC` | 居留證號碼格式錯誤 | `string().validatorResidentID()` |
-| `validate-one-required` | 請先選擇 | 見 TODO Templates |
-| `validate-currency-dollar` | 請輸入有效金額 | 見 TODO Templates |
-| `checkUniSN` | 統一編號格式有誤 | 見 TODO Templates |
-| `hasFullType` | 不可輸入半型文字 | 見 TODO Templates |
-| `hasHalfType` | 不可輸入全型文字 | 見 TODO Templates |
-| `checkROCPassport` | 護照號碼格式錯誤 | 見 TODO Templates |
-| `checkID` | 證件格式錯誤 | 見 TODO Templates |
+| `required` | `string().required()` | 不可空白 |
+| `validate-number` | `string().validateNumber()` | 請輸入有效數字格式 |
+| `validate-positive-number` | `number().positive()` | 請輸入有效正數 |
+| `validate-integer` | `number().integer()` | 請輸入有效整數 |
+| `validate-digits` | `number().positive().integer()` | 請輸入有效正整數 |
+| `validate-positive` | `number().positive().integer().min(1)` | 請輸入大於零之有效正整數 |
+| `validate-greater-than-zero` | `number().moreThan(0)` | 請輸入大於零之有效數字格式 |
+| `validate-positive-integer` | `number().positive().integer()` | 請輸入大於零之有效整數 |
+| `validate-alpha` | `string().validateAlpha()` | 請輸入英文字母 |
+| `validate-alphanum` | `string().matches(/^[\w\u4e00-\u9fa5]+$/, '請輸入有效文數字')` | 請輸入有效文數字 |
+| `validate-date` | `string().validateDate()` | 請輸入有效日期格式 |
+| `validate-date-db` | `string().validateDateDb()` | 有效日期格式為: YYYY-MM-DD |
+| `validate-email` | `string().email()` | 請輸入有效電子郵件地址格式 |
+| `validate-url` | `string().url()` | 請輸入有效網址 |
+| `validate-selection` | `string().required()` | 請選擇 |
+| `validate-ROCDate` | `string().validateROCDate()` | 請輸入正確的民國日期格式 |
+| `validate-ROCDate-Interval` | 必須改為跨欄綁定，起日：`string().validateROCDateMax('endField')` 迄日：`string().validateROCDateMin('startField')` | 日期起迄有誤 |
+| `validate-Date-Interval` | 必須改為跨欄綁定，起日：`string().validateROCDateMax('endField')` 迄日：`string().validateROCDateMin('startField')` | 日期起迄有誤 |
+| `validate-DateYM` | `string().validateDateYM()` | 請輸入正確之西元年月格式 |
+| `validate-ROCDateYM` | `string().validateROCDateYM()` | 請輸入正確之民國年月格式 |
+| `checkInputLength` | `string().max(maxLength)` | 輸入值超出長度限制 |
+| `checkROCID` | `string().validatorROCID()` | 身份證字號格式錯誤 |
+| `checkROCARC` | `string().validatorResidentID()` | 居留證號碼格式錯誤 |
+| `validate-one-required` | 見 TODO Templates | 請先選擇 |
+| `validate-currency-dollar` | 見 TODO Templates | 請輸入有效金額 |
+| `checkUniSN` | 見 TODO Templates | 統一編號格式有誤 |
+| `hasFullType` | 見 TODO Templates | 不可輸入半型文字 |
+| `hasHalfType` | 見 TODO Templates | 不可輸入全型文字 |
+| `checkROCPassport` | 見 TODO Templates | 護照號碼格式錯誤 |
+| `checkID` | 見 TODO Templates | 證件格式錯誤 |
 
 ---
 
