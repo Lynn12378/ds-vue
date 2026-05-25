@@ -4,9 +4,11 @@ description: Quasar Components 使用規範
 
 # Quasar Components 使用規範
 
+**REQUIRED**：quasar 統一使用 bordered dense outlined 的樣式
+
 ## 轉換速查表
 
-按鈕、表單與表格元件需替換為 Quasar 元件：
+**REQUIRED**：按鈕、表單與表格元件需替換為 Quasar 元件：
 
 | 原始元素 | Quasar 元件 |
 |---|---|

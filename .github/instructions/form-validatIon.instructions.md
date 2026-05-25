@@ -24,6 +24,7 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 
 **FORBIDDEN**
 - 禁止新增 JSP 原始碼中不存在的驗證規則
+- 禁止新增欄位沒有的驗證規則
 - 禁止自行推測或撰寫錯誤訊息
 - 禁止修改 CSS class 對應的驗證邏輯
 - 禁止使用 `addMethod`
@@ -32,6 +33,8 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 ---
 
 ## CSS Class → Yup Mapping
+
+> 所有錯誤訊息已內建於 yup，使用時無須額外指定錯誤訊息
 
 | CSS class | 錯誤訊息 | Yup 對應 |
 |---|---|---|
@@ -51,8 +54,8 @@ description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
 | `validate-url` | 請輸入有效網址 | `string().url()` |
 | `validate-selection` | 請選擇 | `string().required()` |
 | `validate-ROCDate` | 請輸入正確的民國日期格式 | `string().validateROCDate()` |
-| `validate-ROCDate-Interval` | 日期起迄有誤 | 起日：`string().validateROCDateMax('endField')` 迄日：`string().validateROCDateMin('startField')` |
-| `validate-Date-Interval` | 日期起迄有誤 | 起日：`string().validateROCDateMax('endField')` 迄日：`string().validateROCDateMin('startField')` |
+| `validate-ROCDate-Interval` | 日期起迄有誤 | 必須改為跨欄綁定，起日綁定：`string().validateROCDateMax('endField')` 迄日綁定：`string().validateROCDateMin('startField')` |
+| `validate-Date-Interval` | 日期起迄有誤 | 必須改為跨欄綁定，起日綁定：`string().validateROCDateMax('endField')` 迄日綁定：`string().validateROCDateMin('startField')` |
 | `validate-DateYM` | 請輸入正確之西元年月格式 | `string().validateDateYM()` |
 | `validate-ROCDateYM` | 請輸入正確之民國年月格式 | `string().validateROCDateYM()` |
 | `checkInputLength` | 輸入值超出長度限制 | `string().max(maxLength)` |

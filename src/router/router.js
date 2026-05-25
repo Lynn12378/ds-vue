@@ -1,15 +1,16 @@
 const routes = [
-    {
-        path: '/A3',
-        name: '/A3',
-        children: [
-            {
-                path: 'DSA30900',
-                name: 'DSA30900',
-                component: () => import('@/views/A3/DSA30900.vue')
-            }
-        ]
-    }
+    // 請替換為實際路徑
+    // {
+    //     path: `{Module}`,
+    //     name:  `/{Module}`,
+    //     children: [
+    //         {
+    //             path: `{FileName}`
+    //             name: `{FileName}`
+    //             component: () => import('@/views/{Module}/{FileName}.vue')
+    //         }
+    //     ]
+    // }
 ];
 
 export default { routes };

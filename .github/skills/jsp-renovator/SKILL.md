@@ -242,9 +242,3 @@ const use{ResourceName} = () => {
 - [ ] **產出完整性**
   - [ ] Vue SFC 語法結構正確，無語法錯誤
   - [ ] 路由已更新
-
----
-
-## Examples
-
-> 見 `./examples/jsp-renovator-example.md`
