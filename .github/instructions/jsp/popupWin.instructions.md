@@ -88,3 +88,5 @@ function openQuery() {
 |---|---|
 | popupWin 拖曳 + 8 向縮放 | - |
 | legacy Prototype 事件橋接 | - |
+
+> 目前直接移除*未完整還原*的功能，不需特別註解說明缺口

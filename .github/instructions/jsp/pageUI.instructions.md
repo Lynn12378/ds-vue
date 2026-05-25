@@ -89,3 +89,5 @@ pageUI.loadin([
 | `createPageWithAllBodySubElement` 自動掃描 body 子節點 | - |
 | 直接 DOM 操作（`appendChild` / `setAttribute`）行為 | - |
 | IE 專用 documentMode / expression 版面邏輯 | - |
+
+> 目前直接移除*未完整還原*的功能，不需特別註解說明缺口
