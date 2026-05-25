@@ -54,6 +54,7 @@ user-invocable: true
 - **Vue SFC**: `src/views/{Module}/{FileName}.vue`
 - **路由更新**: `src/router/index.js`
 - **分析報告**: `.github/ir/analysis/{FileName}-analysis.md`
+- **分析報告模板**: `.github/skills/jsp-renovator/templates/analysis-report-template.md`
 
 ---
 
@@ -182,48 +183,20 @@ const use{ResourceName} = () => {
 
 ### Step 1: 分析與決策
 
-掃描 JSP 識別所有 R2 項目，確認翻新邊界，輸出以下兩張決策表：
+掃描 JSP 識別所有 R2 項目，確認翻新邊界，並依模板輸出分析報告。
 
-#### 表一：R2 翻新決策表**（後續步驟依此表執行，未列出的項目禁止自行新增）
+- 模板：`.github/skills/jsp-renovator/templates/analysis-report-template.md`
+- 產出：`.github/ir/analysis/{FileName}-analysis.md`
 
-**自訂資源**
-
-| 識別項目 | 翻新方式 | 依據 |
-|---|---|---|---|
-| 範例：`Date.toROC()` | Fallback | R2-4 無對應文件 |
-
-**表單驗證**
-
-| 識別項目 | 翻新方式 | 依據 |
-|---|---|---|---|
-| 範例：`validation.js` | 表單驗證 | form-validation.instructions.md | R2-2 |
-| 範例：`class="required"` | CSS Class → Yup Mapping | string.required() | R2-2 |
-
-**UI 元件**
-
-| 識別項目 | 翻新方式 | 依據 |
-|---|---|---|---|
-| 範例：`<table>` | Quasar 元件 | `<q-markup-table>` | R2-1 |
-
-**Server-side 資料**
-
-| 識別項目 | 翻新方式 | 依據 |
-|---|---|---|---|
-| 範例：`${showApplyId}` | Server-side | doPrompt | R2-3 |
-
-
-**表二：Fallback 清單**（Step 2 依此表建立 composable）
-
-| 資源名稱 | 原始方法 | Fallback 模式 |
-|---|---|---|
-| 範例：`Date` | `toROC(arg)` | 函式型 |
-| 範例：`PageUI` | `createPage(arg)` | 函式型 |
-| 範例：`dz:grantButtons` | - | slot 型 |
+**REQUIRED**：
+- Step 2 必須依「表二：Fallback 清單」建立 composable
+- Step 2~Step 4 僅可依分析報告中的「表一：R2 翻新決策表」執行
+- 未列於表一之項目禁止自行新增翻新
 
 ---
 
 ### Step 2: 建立 Fallback Composables
-- 依 Step 1 表二，於 `<script setup>` 建立所有 Fallback composable 並以 `region` + `endregion` 包裹
+- 依 Step 1 表二，於 `<script setup>` 建立所有 Fallback composable 並以 `// region` + `// endregion` 包裹
 - 方法名稱必須對應表二原始方法名稱
 - 確保後續翻新步驟可直接引用
 
