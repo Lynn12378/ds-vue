@@ -100,7 +100,7 @@ user-invocable: true
 - [Quasar 元件轉換規範](../../instructions/quasar-components.instructions.md)
 - [表單驗證翻新規範](../../instructions/form-validation.instructions.md)
 - [Server-side 資料補償規範](../../instructions/server-side.instructions.md)
-- [自訂資源翻新指引](../../references/{resourceName}.md)
+- [自訂資源翻新指引](../../instructions/jsp/{resourceName}.md)
 
 ---
 
@@ -135,7 +135,7 @@ user-invocable: true
 
 #### R2-4: 自訂資源
 
-識別：以下項目視為自訂資源，依 [自訂資源翻新指引](../../references/{resourceName}.md) 翻新，無對應文件則 Fallback。
+識別：以下項目視為自訂資源，依 [自訂資源翻新指引](../../instructions/jsp/{resourceName}.md) 翻新，無對應文件則 Fallback。
 
 - 外部 `.js` 檔案引用的函式（`CSRUtil.*`、`PageUI.*`、`Date.toROC()` 等）
 - non-core Taglib（`cathay:*`、`dz:*`、`CXL:*`、`fmt:*`）
@@ -148,7 +148,7 @@ user-invocable: true
 ### R3: Fallback 規則
 
 以下情境必須套用 Fallback 處理，不得推論實作：
-- 自訂資源無對應轉換規範文件（`.github/references/{resourceName}.md`）
+- 自訂資源無對應轉換規範文件（`.github/instructions/jsp/{resourceName}.md`）
 - 無等價技術棧
 
 **Fallback 模式**：於 `<script setup>` 最底部統一定義 composable，方法名稱必須對應原始資源方法名稱：

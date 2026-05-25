@@ -75,3 +75,9 @@ description: Quasar Components 使用規範
   </template>
 </q-input>
 ```
+
+---
+
+## 日期選擇器規範
+
+`<input type="text"> + <img calendar.gif>` 替換規範詳見 [calendar.instructions.md](jsp/calendar.instructions.md)。
