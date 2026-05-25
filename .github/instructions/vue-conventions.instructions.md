@@ -1,3 +1,7 @@
+---
+description: Vue 規範
+---
+
 # Vue Conventions
 
 ## 專案目錄
