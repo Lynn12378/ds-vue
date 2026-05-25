@@ -54,7 +54,6 @@ user-invocable: true
 - **Vue SFC**: `src/views/{Module}/{FileName}.vue`
 - **路由更新**: `src/router/index.js`
 - **分析報告**: `.github/ir/analysis/{FileName}-analysis.md`
-- **分析報告模板**: `.github/skills/jsp-renovator/templates/analysis-report-template.md`
 
 ---
 
@@ -188,10 +187,7 @@ const use{ResourceName} = () => {
 - 模板：`.github/skills/jsp-renovator/templates/analysis-report-template.md`
 - 產出：`.github/ir/analysis/{FileName}-analysis.md`
 
-**REQUIRED**：
-- Step 2 必須依「表二：Fallback 清單」建立 composable
-- Step 2~Step 4 僅可依分析報告中的「表一：R2 翻新決策表」執行
-- 未列於表一之項目禁止自行新增翻新
+**REQUIRED**：分析報告必須完整填寫，且所有 R2 項目均有明確決策（翻新或 Fallback）
 
 ---
 
