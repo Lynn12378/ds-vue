@@ -180,18 +180,37 @@ const use{ResourceName} = () => {
 
 ## Workflow
 
-**Step 1: 分析與決策**
+### Step 1: 分析與決策
 
 掃描 JSP 識別所有 R2 項目，確認翻新邊界，輸出以下兩張決策表：
 
-**表一：R2 翻新決策表**（後續步驟依此表執行，未列出的項目禁止自行新增）
+#### 表一：R2 翻新決策表**（後續步驟依此表執行，未列出的項目禁止自行新增）
 
-| 識別項目 | 類型 | 翻新方式 | 依據 |
+**自訂資源**
+
+| 識別項目 | 翻新方式 | 依據 |
 |---|---|---|---|
-| 範例：`Date.toROC()` | 自訂資源 | Fallback | R2-4 無對應文件 |
+| 範例：`Date.toROC()` | Fallback | R2-4 無對應文件 |
+
+**表單驗證**
+
+| 識別項目 | 翻新方式 | 依據 |
+|---|---|---|---|
 | 範例：`validation.js` | 表單驗證 | form-validation.instructions.md | R2-2 |
-| 範例：`${showApplyId}` | Server-side | doPrompt | R2-3 |
+| 範例：`class="required"` | CSS Class → Yup Mapping | string.required() | R2-2 |
+
+**UI 元件**
+
+| 識別項目 | 翻新方式 | 依據 |
+|---|---|---|---|
 | 範例：`<table>` | Quasar 元件 | `<q-markup-table>` | R2-1 |
+
+**Server-side 資料**
+
+| 識別項目 | 翻新方式 | 依據 |
+|---|---|---|---|
+| 範例：`${showApplyId}` | Server-side | doPrompt | R2-3 |
+
 
 **表二：Fallback 清單**（Step 2 依此表建立 composable）
 
@@ -203,19 +222,19 @@ const use{ResourceName} = () => {
 
 ---
 
-**Step 2: 建立 Fallback Composables**
+### Step 2: 建立 Fallback Composables
 - 依 Step 1 表二，於 `<script setup>` 建立所有 Fallback composable 並以 `region` + `endregion` 包裹
 - 方法名稱必須對應表二原始方法名稱
 - 確保後續翻新步驟可直接引用
 
-**Step 3: R1 直接翻新**
+### Step 3: R1 直接翻新
 - 依 R1 規範逐行翻新所有語義已知項目
 
-**Step 4: R2 規範翻新**
+### Step 4: R2 規範翻新
 - 依 Step 1 表一與對應規範文件逐項翻新
 - 僅處理表一列出的項目，不得自行新增
 
-**Step 5: 驗證**
+### Step 5: 驗證
 - 對照 Evaluation Checklist 逐項確認
 - 若發現語法錯誤：
   1. 查找對應規範文件是否有處理方式
