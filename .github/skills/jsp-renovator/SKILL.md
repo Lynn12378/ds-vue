@@ -60,10 +60,10 @@ user-invocable: true
 ## Context Variables
 
 ```
-{FileName}   = systemCode(2) + moduleCode(2) + subCode(4)，例：DSA30900
-{Bean_Name}  = systemCode(2) + moduleCode(2) + '_' + subCode(4)，例：DSA3_0900
-{Module}     = moduleCode(2)，例：A3
-{dispatcher} = 後端 baseUrl，已於 customAxios 封裝，翻新時不需傳入
+{FileName}： JSP 檔名   = systemCode(2) + moduleCode(2) + subCode(4)，例：DSA30900
+{Bean_Name}：JSP 對應 bean  = systemCode(2) + moduleCode(2) + '_' + subCode(4)，例：DSA3_0900
+{Module}：模組代碼     = moduleCode(2)，例：A3
+{dispatcher}：後端 baseUrl，已於 customAxios 封裝，翻新時不需傳入
 ```
 
 ---
@@ -141,6 +141,7 @@ user-invocable: true
 - non-core Taglib（`cathay:*`、`dz:*`、`CXL:*`、`fmt:*`）
 - JSP include（`<%@ include file="..."%>`）
 - Java 類別呼叫（`DateUtil.*`、`StringUtils.*` 等）
+- 非內部定義的全域函式（`popupWin.windowOpen()`、`displayMessage()`、`getCalendarFor` 等）
 
 ---
 
