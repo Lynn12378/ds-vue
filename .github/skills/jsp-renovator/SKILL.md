@@ -227,6 +227,7 @@ const use{ResourceName} = () => {
   - [ ] 規範文件以外無行為改變
 
 - [ ] **Fallback 處理**
+  - [ ] 所有外部JSP、方法、函數、custom tag 皆無實作內部邏輯
   - [ ] 所有自訂資源已建立 Fallback composable 或標記 TODO
   - [ ] Fallback composable 未實作內部邏輯
 
