@@ -733,7 +733,8 @@ const useMsgDisplayer = () => {
 
   <!-- A區 -->
   <form id="form1" name="form1" method="post">
-    <table :style="{ width: '100%', border: '0', borderCollapse: 'collapse' }" class="tbBox2" id="tableA">
+    <!-- TODO: tableA 為表單版面用 table，原 JSP 無 <th>，此 accessibility 警告待人工評估是否需補 <th> 或改為 CSS Grid/Flex 版面 -->
+    <q-markup-table outlined dense :style="{ width: '100%' }" class="tbBox2" id="tableA">
       <tr>
         <td class="tbYellow" colspan="6">
           <!-- FIXME: radio 群組改為 q-field + q-radio，需人工確認 functionSwitch 事件觸發邏輯等價 -->
@@ -943,8 +944,8 @@ const useMsgDisplayer = () => {
             :error-message="errors.useArea1"
           />
         </td>
-        <td class="tbYellow" width="12%">列管區</td>
-        <td class="tbYellow2" width="10%">
+        <td class="tbYellow" :style="{ width: '12%' }">列管區</td>
+        <td class="tbYellow2" :style="{ width: '10%' }">
           <!-- RST_KIND -->
           <q-select
             id="RST_KIND"
@@ -1220,7 +1221,7 @@ const useMsgDisplayer = () => {
           <span style="color:green">＄＄</span>表示擔保品為非承作區或列管區。
         </td>
       </tr>
-    </table>
+    </q-markup-table>
   </form>
 
   <!-- B區 查詢結果 -->
@@ -1377,8 +1378,10 @@ const useMsgDisplayer = () => {
   </div>
 
   <!-- C區 承作分區查詢結果 -->
-  <table
-    :style="{ width: '100%', border: '0', borderCollapse: 'collapse' }"
+  <q-markup-table
+    border
+    dense
+    :style="{ width: '100%' }"
     class="tbBox2"
     id="tableC"
     v-show="viewType === 'areaCodeQuery'"
@@ -1396,7 +1399,7 @@ const useMsgDisplayer = () => {
       <td class="tbBlue" :style="{ textAlign: 'center' }">備註</td>
       <td class="tbYellow2" colspan="2" id="MEMO">{{ memo }}</td>
     </tr>
-  </table>
+  </q-markup-table>
 
   <!-- popupWin 容器 -->
   <PopupWinDialog
