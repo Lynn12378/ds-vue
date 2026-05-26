@@ -290,9 +290,9 @@ const use{ResourceName} = () => {
 
 ### Server-side 資料補全（R2-3）
 - [ ] 所有 Server-side 注入語法已識別，無遺漏
-- [ ] 所有 Server-side 注入資料來源已依翻新指引補全或 TODO 佔位
+- [ ] 所有補全資料集中於 `doPrompt`，並於 `onMounted` 呼叫
+- [ ] 所有補全資料已標注 `// FIXME: 資料來源待確認`
 - [ ] `${param.xxx}` 已直接翻新為 `route.query.xxx`
-- [ ] 頁面內部宣告的 `${xxx}` 已直接翻新（R1），未誤判為 Server-side 注入
 
 ### 自訂資源（R3）
 - [ ] 所有自訂資源已識別，無遺漏

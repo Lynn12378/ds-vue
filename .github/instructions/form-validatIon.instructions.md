@@ -1,252 +1,92 @@
----
-description: JSP `validation.js` → VeeValidate + Yup + Quasar 翻新指引
----
+# 表單驗證翻新指引
 
-# 表單驗證翻新規範
+## Rules
 
-## Core Principles
+### R1. 全局驗證器對照表
 
-**引用規範**
-- Yup 規則一律具名引用（`import { object, string } from 'yup'`）
-- 優先使用 CathayValidateRules.js（`import '@/assets/libs/CathayValidateRules.js'`）
+**REQUIRED**：`validation.js` 全局驗證器必須依照下表映射為 Yup schema method
+**IF** 無對應 Yup method 的驗證器 **THEN** 於 schema 內部註解 `// TODO: [ValidationClassName] － 無對應 Yup method`。
+**FORBIDDEN**： 全局驗證器已內建錯誤訊息，禁止自訂錯誤訊息(ex：`string.required('Custom error message')`)
 
-**Schema 規範**
-- schema key 必須對應原始欄位 `id`/`name`（camelCase）
-- schema 只納入有驗證規則的欄位
-- 全局驗證規則必須依 DOM 的 `CSS Class → Yup Mapping` 對照表轉換為 yup 規則
-- `disabled` 欄位依 `TODO Templates` 標記
-
-**useForm / useField 規範**
-- 無論有無驗證規則，form 內所有欄位一律 `useField` 宣告
-- `useForm` 所有欄位必須設定 `initialValues` 與 `validateOnMount: false`
-
-**自訂規則改寫規範**
-- JSP 自訂規則（`add` / `addAllThese`）識別為頁面內自訂驗證邏輯，必須抽出為頁面內共用箭頭函式，再以 `.test()` 引用，函式名稱對應原始規則名稱
-- 跨欄驗證邏輯需改寫為透過 `this.parent.{fieldName}` 存取關聯欄位值，不得直接讀取 DOM
-
-**錯誤訊息規範**
-- 錯誤訊息必須來自 JSP 原始碼
-- 無對應規則依 `TODO Templates` 處理
-
-**表單狀態規範**
-- **IF** 送出表單前（query / submit）**THEN** 直接移除 `valid.reset()`
-- **IF** 清除表單值（clear）**THEN** `resetForm()`
-
-**FORBIDDEN**
-- 禁止新增 JSP 原始碼中不存在的驗證規則
-- 禁止自行推測或撰寫錯誤訊息
-- 禁止修改 CSS class 對應的驗證邏輯
-- 禁止使用 `addMethod`
-- 禁止 `import *`
-
----
-
-## CSS Class → Yup Mapping
-
-> 以下所有錯誤訊息已內建於 yup，使用時無須額外指定錯誤訊息
-
-| CSS class | Yup 對應 | 錯誤訊息 |
-|---|---|---|
-| `required` | `string().required()` | 不可空白 |
-| `validate-number` | `string().validateNumber()` | 請輸入有效數字格式 |
-| `validate-positive-number` | `number().positive()` | 請輸入有效正數 |
-| `validate-integer` | `number().integer()` | 請輸入有效整數 |
-| `validate-digits` | `number().positive().integer()` | 請輸入有效正整數 |
-| `validate-positive` | `number().positive().integer().min(1)` | 請輸入大於零之有效正整數 |
-| `validate-greater-than-zero` | `number().moreThan(0)` | 請輸入大於零之有效數字格式 |
-| `validate-positive-integer` | `number().positive().integer()` | 請輸入大於零之有效整數 |
-| `validate-alpha` | `string().validateAlpha()` | 請輸入英文字母 |
-| `validate-alphanum` | `string().matches(/^[\w\u4e00-\u9fa5]+$/, '請輸入有效文數字')` | 請輸入有效文數字 |
-| `validate-date` | `string().validateDate()` | 請輸入有效日期格式 |
-| `validate-date-db` | `string().validateDateDb()` | 有效日期格式為: YYYY-MM-DD |
-| `validate-email` | `string().email()` | 請輸入有效電子郵件地址格式 |
-| `validate-url` | `string().url()` | 請輸入有效網址 |
-| `validate-selection` | `string().required()` | 請選擇 |
-| `validate-ROCDate` | `string().validateROCDate()` | 請輸入正確的民國日期格式 |
-| `validate-ROCDate-Interval` | 必須改為跨欄綁定，起日：`string().validateROCDateMax('endField')` 迄日：`string().validateROCDateMin('startField')` | 日期起迄有誤 |
-| `validate-Date-Interval` | 必須改為跨欄綁定，起日：`string().validateROCDateMax('endField')` 迄日：`string().validateROCDateMin('startField')` | 日期起迄有誤 |
-| `validate-DateYM` | `string().validateDateYM()` | 請輸入正確之西元年月格式 |
-| `validate-ROCDateYM` | `string().validateROCDateYM()` | 請輸入正確之民國年月格式 |
-| `checkInputLength` | `string().max(maxLength)` | 輸入值超出長度限制 |
-| `checkROCID` | `string().validatorROCID()` | 身份證字號格式錯誤 |
-| `checkROCARC` | `string().validatorResidentID()` | 居留證號碼格式錯誤 |
-| `validate-one-required` | 見 TODO Templates | 請先選擇 |
-| `validate-currency-dollar` | 見 TODO Templates | 請輸入有效金額 |
-| `checkUniSN` | 見 TODO Templates | 統一編號格式有誤 |
-| `hasFullType` | 見 TODO Templates | 不可輸入半型文字 |
-| `hasHalfType` | 見 TODO Templates | 不可輸入全型文字 |
-| `checkROCPassport` | 見 TODO Templates | 護照號碼格式錯誤 |
-| `checkID` | 見 TODO Templates | 證件格式錯誤 |
-
-**FORBIDDEN**：若無需覆蓋錯誤，禁止於 yup 規則中額外指定錯誤訊息（如：`string().required('不可空白')`），必須使用 yup 內建錯誤訊息
+| validation.js className | Yup method |
+|---|---|
+| `IsEmpty` | |
+| `required` | |
+| `validate-number` | |
+| `validate-positive-number` | |
+| `validate-integer` | |
+| `validate-digits` | |
+| `validate-positive` | |
+| `validate-greater-than-zero` | |
+| `validate-alpha` | |
+| `validate-alphanum` | |
+| `validate-date` | |
+| `validate-email` | |
+| `validate-url` | |
+| `validate-date-db` | |
+| `validate-currency-dollar` | |
+| `validate-selection` | |
+| `validate-one-required` | |
+| `validate-positive-integer` | |
+| `validate-Date-Interval` | |
+| `validate-ROCDate` | |
+| `validate-ROCDate-Interval` | |
+| `validate-DateYM` | |
+| `validate-ROCDateYM` | |
+| `checkInputLength` | |
+| `checkUniSN` | |
+| `hasFullType` | |
+| `hasHalfType` | |
+| `checkROCID` | |
+| `checkROCPassport` | |
+| `checkROCARC` | |
+| `checkID` | |
 
 ---
 
-## TODO Templates
+### R2. validation.js API
 
-### 無對應 Yup 規則
+**REQUIRED**：下表 validation.js API 必須依照對應方式翻新為 vee-validate + yup 實作
 
-```js
-// TODO: {className} 無對應 Yup 規則，待人工實作
-fieldName: string().test('{className}', '{JSP 原始錯誤訊息}', (v) => {
-  console.warn('[TODO] {className} 驗證邏輯待實作')
-  return true
-})
-```
-
-### disabled 欄位
-
-`validation.js` 自動跳過 `disabled` 欄位驗證，新技術棧無法還原此機制，需人工確認是否應納入 schema。
-
-```js
-const schema = object({
-  // FIXME: 原 validation.js 自動跳過 disabled 欄位，新技術棧無法還原，需人工確認是否納入 schema
-  fieldName: string(),
-})
-```
+| API | 翻新方式 |
+|---|---|
+| `Validation.add(className, error, testFn)` | `const validators = { [className]: { name, message, test } }` |
+| `Validation.addAllThese([[className, error, testFn], ...])` | `const validators = { [className]: { name, message, test }, ... }` |
+| `Validation.get(className).test(v)` | 依 R1 對照表查找對應 Yup method，無對應則 `// TODO: [className] － 無對應 Yup method` |
+| `new Validation(formId, options)` | `const {validSchema} = yup.object({ ... })` |
+| `valid.validate()` | `const { valid } = await validate()` |
+| `valid.reset()`/ `valid.clear()` | **IF** 目的為清空表單 **THEN** `resetForm()` **ELSE IF** 送出表單(submit) **THEN** 直接移除 |
+| `valid.define(className, inputs)` | `fieldName: yup.string().test(validators[className])` |
 
 ---
 
-## VeeValidate Guidelines
+### R3. validators 預定義 test 物件
 
-### useForm 初始化
-
-```js
-import { useForm, useField } from 'vee-validate'
-import { object, string, number } from 'yup'
-import '@/assets/libs/CathayValidateRules.js'
-
-const { errors, validate, setValues, resetForm } = useForm({
-  validationSchema: object({ ... }),
-  initialValues: { fieldName: '' }, // ⚠️ 必須設定所有欄位，否則進入頁面就顯示錯誤
-  validateOnMount: false,           // ⚠️ 必須設定，防止頁面載入時觸發驗證
-})
-```
-
-### useField 宣告
+**REQUIRED**：
+- `Validation.add` 與 `Validation.addAllThese` 定義的驗證器，必須在 `useForm` 之前翻新為預定義 test 物件
+- `name` 對應原始 `className`
+- `message` 沿用原始 `error` 字串
+- `test` 必須重構為 Yup 可行的驗證規則
+- 跨欄取值：`$F('fieldName')` → `this.parent['fieldName']`
+- 重構的邏輯必須標注 `// FIXME: 原始語法 → 翻新後語法 － 需確認行為等價`
 
 ```js
-// ORIGINAL_FIELD_NAME
-const { value: fieldName } = useField('fieldName')
-```
-
-```vue
-<q-input
-  v-model="fieldName"
-  dense outlined
-  :error="!!errors.fieldName"
-  :error-message="errors.fieldName"
-/>
-```
-
-### .test() 寫法
-
-原始 JSP 跨欄驗證透過 `$F(node.name)` 直接讀取 DOM 值，翻新後必須改寫為透過 `this.parent` 存取同 schema 內其他欄位值。`.test()` 必須使用具名函式（非箭頭函式）才能存取 `this.parent`，共用驗證邏輯抽出為頁面內箭頭函式：
-
-```js
-// FIXME: 改寫自 {原始規則名稱}，需人工確認邏輯等價
-const validateBetween = (val1, val2) => {
-  if (!val1 || !val2) return true
-  return Number(val2) >= Number(val1)
-}
-
-const schema = object({
-  // FIELD_NAME1
-  fieldName1: string(),
-  // FIELD_NAME2：透過 this.parent.fieldName1 存取關聯欄位值
-  fieldName2: string().test(
-    'validateBetween',
-    '迄值不得小於起值',
-    function(val) {
-      return validateBetween(this.parent.fieldName1, val)
+const validators = {
+  // 單欄驗證
+  [className]: {
+    name: className,
+    message: '原始 error 字串',
+    test: (v) => { /* 重構後邏輯 */ }
+  },
+  // 跨欄驗證
+  [className]: {
+    name: className,
+    message: '原始 error 字串',
+    test: function(v) {
+      const relatedValue = this.parent['fieldName'] // $F('fieldName')
+      /* 重構後邏輯 */
     }
-  ),
-})
-```
-
----
-
-## Examples
-
-### 單欄驗證
-
-```jsp
-<%-- JSP --%>
-<input id="QUERY_ID" name="QUERY_ID" type="text"
-  class="required checkInputLength" maxlength="10" />
-```
-
-```js
-const schema = object({
-  // QUERY_ID
-  queryId: string().required('不可空白').max(10, '輸入值超出長度限制'),
-})
-
-// QUERY_ID
-const { value: queryId } = useField('queryId')
-```
-
-### 跨欄驗證（起迄區間）
-
-```jsp
-<%-- JSP --%>
-Validation.addAllThese([
-  ['validateBetween', '迄值不得小於起值', function(v, node) {
-    var v2 = parseInt(v, 10)
-    var v1 = parseInt($F(node.name + '1'), 10)
-    if (isNaN(v1) || isNaN(v2)) return true
-    return v2 >= v1
-  }]
-])
-<input id="BUILD_AGE1" name="BUILD_AGE" class="validate-digits validateBetween" />
-<input id="BUILD_AGE2" name="BUILD_AGE" class="validate-digits validateBetween" />
-```
-
-```js
-// FIXME: 改寫自 validateBetween，需人工確認邏輯等價
-const validateBetween = (val1, val2) => {
-  if (!val1 || !val2) return true
-  return Number(val2) >= Number(val1)
+  }
 }
-
-const schema = object({
-  // BUILD_AGE1
-  buildAge1: string(),
-  // BUILD_AGE2：透過 this.parent.buildAge1 存取關聯欄位值
-  buildAge2: string().test(
-    'validateBetween',
-    '迄值不得小於起值',
-    function(val) {
-      return validateBetween(this.parent.buildAge1, val)
-    }
-  ),
-})
-
-// BUILD_AGE1
-const { value: buildAge1 } = useField('buildAge1')
-// BUILD_AGE2
-const { value: buildAge2 } = useField('buildAge2')
 ```
 
-### 多 Validation 實例（條件式 schema）
-
-```jsp
-<%-- JSP --%>
-var valid1 = new Validation('form1', { ... }) // 擔保品查詢
-var valid2 = new Validation('form1', { ... }) // 社區資料查詢
-```
-
-```js
-// FIXME: 條件式 schema，需依顯示條件調整納入欄位，待人工確認
-const schema = computed(() =>
-  viewType.value === 'community'
-    ? object({ caseName: string().required('不可空白'), city: string() })
-    : object({ city: string().required('不可空白'), addrNo: string() })
-)
-
-const { errors, validate, resetForm } = useForm({
-  validationSchema: schema,
-  initialValues: { caseName: '', city: '', addrNo: '' },
-  validateOnMount: false,
-})
-```

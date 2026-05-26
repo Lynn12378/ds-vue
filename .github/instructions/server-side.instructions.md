@@ -1,48 +1,30 @@
----
-description: JSP 翻新 Vue3 Server-side 資料補償規範
----
-
-# Server-side 資料補償規範
+# Server-side 資料補全指引
 
 ## Core Principles
 
 **REQUIRED**
-- JSP 後端注入資料必須於 `onMounted` 呼叫 `doPrompt` 補償至 Vue SFC
-- `doPrompt` 使用 `customAxios.get('{Bean_Name}/prompt')` 取得後端資料
-- 補償變數的 key 必須對應 JSP 原始碼的資料名稱
+- 必須於 `onMounted` 呼叫 `doPrompt` 處理 Server-side 資料補全邏輯
+- `doPrompt` 必須使用 `customAxios.get('{Bean_Name}/prompt')` 取得 Response 並賦值需補全的資料
+- 補全的 Response key 必須與 JSP 原始碼的資料名稱**完全一致**
 - 所有補償資料必須標注 `// FIXME: 資料來源待確認`
-- `${param.xxx}` 不屬於補償對象，依 R1 直接翻新為 `route.query.xxx`
 
 **FORBIDDEN**
-- 禁止將頁面內部宣告的 JS 變數視為補償對象
-- 禁止在 `doPrompt` 以外的函式處理資料補償邏輯
-- 禁止自行推測補償資料的結構或型別
+- 禁止在 `doPrompt` 外部處理資料補全邏輯
+- 禁止補全非 Server-side 資料來源的項目
 
----
-
-## Example
-
-```jsp
-<%-- JSP --%>
-<select name="SELECT_LIST" id="SELECT_LIST">
-  <c:forEach var="map" items="${SELECT_LIST}">
-    <option value="${map.key}">${map.value}</option>
-  </c:forEach>
-</select>
-```
+## 補全結構
 
 ```js
-// DSX01100.vue
 import { ref, onMounted } from 'vue'
 import customAxios from '@/assets/libs/axios/instance.js'
 
-// ${SELECT_LIST}
-const selectList = ref([])
+// ${原始變數名稱}
+const xxx = ref(null)
 
 const doPrompt = async () => {
-  const resp = await customAxios.get('DSX0_1100/prompt')
+  const resp = await customAxios.get('{Bean_Name}/prompt')
   // FIXME: 資料來源待確認
-  selectList.value = resp.SELECT_LIST
+  xxx.value = resp.xxx
 }
 
 onMounted(async () => {
