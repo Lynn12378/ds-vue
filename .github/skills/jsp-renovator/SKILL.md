@@ -6,7 +6,7 @@ disable-model-invocation: true
 user-invocable: true
 ---
 
-# LLM-Optimized Instructional IR: JSP Renovator
+# JSP Renovator
 
 ## Goals
 
@@ -35,6 +35,8 @@ user-invocable: true
   - 禁止規範文件以外的行為改變
   - 禁止參照其他頁面寫法調整或新增不存在的頁面規格
   - 禁止主動優化或簡化原始業務邏輯
+  - 禁止在分析報告（Step 1 產出）之外自行新增翻新決策
+  - 禁止 Step 2～4 執行時重新解讀 JSP 或推測未記錄的決策
 
 ### Technology Constraints
 
@@ -51,19 +53,19 @@ user-invocable: true
 
 ### Output Constraints
 
+- **分析報告**: `.github/ir/analysis/{FileName}-analysis.md`（Step 1 產出，後續步驟唯一執行依據）
 - **Vue SFC**: `src/views/{Module}/{FileName}.vue`
 - **路由更新**: `src/router/index.js`
-- **分析報告**: `.github/ir/analysis/{FileName}-analysis.md`
 
 ---
 
 ## Context Variables
 
 ```
-{FileName}： JSP 檔名   = systemCode(2) + moduleCode(2) + subCode(4)，例：DSA30900
-{Bean_Name}：JSP 對應 bean  = systemCode(2) + moduleCode(2) + '_' + subCode(4)，例：DSA3_0900
-{Module}：模組代碼     = moduleCode(2)，例：A3
-{dispatcher}：後端 baseUrl，已於 customAxios 封裝，翻新時不需傳入
+{FileName}   = JSP 檔名，systemCode(2) + moduleCode(2) + subCode(4)，例：DSA30900
+{Bean_Name}  = JSP 對應 bean，systemCode(2) + moduleCode(2) + '_' + subCode(4)，例：DSA3_0900
+{Module}     = JSP 對應模組，moduleCode(2)，例：A3
+{dispatcher} = 後端 baseUrl，已於 customAxios 封裝，翻新時不需傳入
 ```
 
 ---
@@ -100,26 +102,25 @@ user-invocable: true
 - [Quasar 元件轉換規範](../../instructions/quasar-components.instructions.md)
 - [表單驗證翻新規範](../../instructions/form-validation.instructions.md)
 - [Server-side 資料補償規範](../../instructions/server-side.instructions.md)
-- [自訂資源翻新指引](../../instructions/jsp/{resourceName}.md)
+- [自訂資源翻新指引](../../references/{resourceName}.md)
 
 ---
 
 #### R2-1: Quasar 元件替換
 
-`<table>`, `<input>`, `<textarea>`, `<select>` 需替換為對應 Quasar 元件，
-參照 [Quasar 元件轉換規範](../../instructions/quasar-components.instructions.md)。
+識別：`<table>`, `<input>`, `<textarea>`, `<select>`，參照 [Quasar 元件轉換規範](../../instructions/quasar-components.instructions.md)。
 
 ---
 
 #### R2-2: 表單驗證技術棧翻新
 
-若頁面引用 `CM/js/ui/validation.js`，必須參照 [表單驗證翻新規範](../../instructions/form-validation.instructions.md) 翻新為 VeeValidate + Yup + Quasar。
+識別：頁面引用 `CM/js/ui/validation.js`，參照 [表單驗證翻新規範](../../instructions/form-validation.instructions.md) 翻新為 VeeValidate + Yup + Quasar。
 
 ---
 
 #### R2-3: Server-side 資料來源識別與補償
 
-若存在以下後端注入語法，必須參照 [Server-side 資料補償規範](../../instructions/server-side.instructions.md)。
+識別：以下後端注入語法，參照 [Server-side 資料補償規範](../../instructions/server-side.instructions.md)。
 
 - `${xxx}`（EL 表達式）
 - `<%=request.getParameter("xxx")%>`
@@ -141,7 +142,6 @@ user-invocable: true
 - non-core Taglib（`cathay:*`、`dz:*`、`CXL:*`、`fmt:*`）
 - JSP include（`<%@ include file="..."%>`）
 - Java 類別呼叫（`DateUtil.*`、`StringUtils.*` 等）
-- 非內部定義的全域函式（`popupWin.windowOpen()`、`displayMessage()`、`getCalendarFor` 等）
 
 ---
 
@@ -180,30 +180,31 @@ const use{ResourceName} = () => {
 
 ## Workflow
 
-### Step 1: 分析與決策
+**Step 1: 分析與決策**
 
-掃描 JSP 識別所有 R2 項目，確認翻新邊界，並依模板輸出分析報告。
+掃描 JSP 識別所有 R2 項目，確認翻新邊界，依 template 產出分析報告：
+- Template：`.github/skills/jsp-renovator/templates/analysis-report-template.md`
+- 產出路徑：`.github/ir/analysis/{FileName}-analysis.md`
 
-- 模板：`.github/skills/jsp-renovator/templates/analysis-report-template.md`
-- 產出：`.github/ir/analysis/{FileName}-analysis.md`
-
-**REQUIRED**：分析報告必須完整填寫，且所有 R2 項目均有明確決策（翻新或 Fallback）
+**REQUIRED**：
+- 分析報告必須完整填寫，Step 2～4 以分析報告為唯一執行依據，不得再重新解讀 JSP
+- 表一「具體產出」欄位必須寫明到實作層級（元件名稱、ref 名稱、schema key 等），不得只寫規範文件名稱
 
 ---
 
-### Step 2: 建立 Fallback Composables
-- 依 Step 1 表二，於 `<script setup>` 建立所有 Fallback composable 並以 `// region` + `// endregion` 包裹
+**Step 2: 建立 Fallback Composables**
+- 依 分析報告 表二，於 `<script setup>` 建立所有 Fallback composable 並以 `// region` + `// endregion` 包裹 composable 定義區塊
 - 方法名稱必須對應表二原始方法名稱
 - 確保後續翻新步驟可直接引用
 
-### Step 3: R1 直接翻新
+**Step 3: R1 直接翻新**
 - 依 R1 規範逐行翻新所有語義已知項目
 
-### Step 4: R2 規範翻新
-- 依 Step 1 表一與對應規範文件逐項翻新
+**Step 4: R2 規範翻新**
+- 依 分析報告 表一與對應規範文件逐項翻新
 - 僅處理表一列出的項目，不得自行新增
 
-### Step 5: 驗證
+**Step 5: 驗證**
 - 對照 Evaluation Checklist 逐項確認
 - 若發現語法錯誤：
   1. 查找對應規範文件是否有處理方式
