@@ -1,4 +1,4 @@
-import { BasLayout } from '@/components/BaseLayout.vue'
+import BaseLayout from '@/components/BaseLayout.vue'
 
 export const routes = [
     {
