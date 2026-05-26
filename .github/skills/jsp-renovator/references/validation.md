@@ -63,6 +63,7 @@
 ### R3. validators 預定義 test 物件
 
 **REQUIRED**：
+
 - `Validation.add` 與 `Validation.addAllThese` 定義的驗證器，必須在 `useForm` 之前翻新為預定義 test 物件
 - `name` 對應原始 `className`
 - `message` 沿用原始 `error` 字串
@@ -95,6 +96,7 @@ const validators = {
 ### R4. Schema 定義
 
 **REQUIRED**：
+
 - 每個 `const validName = new Validation(formId)` 必須各自建立對應 schema
 - schema 命名規則：`{validName}Schema`
 - 依 `formId` 找出 HTML 中 `id="formId"` 的 `<form>` 元素，掃描其內所有表單欄位的靜態 className 驗證器，改為綁定對應的 Yup method
@@ -106,6 +108,7 @@ const validators = {
 ### R5. useForm
 
 **REQUIRED**：
+
 - `validators` 必須在 `useForm` 之前建立（見 R3）
 - `initialValues` 必須包含所有 schema 內有驗證規則的欄位，初始值依欄位型別設定為 `''` 或 `0`
 - `validateOnMount: false` 必須設定，防止頁面載入時觸發驗證
@@ -147,8 +150,7 @@ const { errors, validate, resetForm, setValues } = useForm({
 
 ### R6. handleSubmit
 
-**REQUIRED**：
-- 原始 JSP 送出表單函式內，將 `valid.validate()` 翻新為以下結構：
+**REQUIRED**： 原始 JSP 送出表單函式內，將 `valid.validate()` 翻新為以下結構：
 
 ```js
 const { valid } = await validate()
@@ -167,8 +169,7 @@ const onSubmit = async () => {
 }
 ```
 
-**FORBIDDEN**：
-- 禁止在送出表單時呼叫 `resetForm()`
+**FORBIDDEN**： 禁止在送出表單時呼叫 `resetForm()`
 
 ---
 
