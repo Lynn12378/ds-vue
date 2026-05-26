@@ -1,70 +1,40 @@
 # Quasar 元件翻新指引
 
-## Rules
+## Core Principles
 
 **REQUIRED**：
 
 - 所有表單元件必須使用 `v-model` 綁定資料
-- 原始 HTML 元素的 `name`、`class` 必須完整保留
+- 原始 HTML 元素的 `class` 必須完整保留
+- 表單元素的 `name` 必須完整保留
 - `readonly`、`disabled` 屬性必須保留並改為 binding（`:readonly`、`:disabled`）
 - 表單驗證錯誤訊息必須綁定至 `:error` 與 `:error-message`
-- 必須使用 `dense` 和 `outlined` / `bordered` 風格以符合原始樣式
+- 表單輸入元件（QInput、QSelect、QFile）：必須加上 `dense` + `outlined`
+- 選擇元件（QCheckbox、QRadio）：必須加上 `dense`，錯誤訊息由外層 `q-field` 的 `:error` 與 `:error-message` 處理
+- 相同 `name` 屬性的 QCheckbox、QRadio 必須使用 `q-field` 包裹，`q-field` 必須加上 `dense` + `borderless`
+- 表格元件（QMarkupTable）：必須加上 `dense` + `bordered`
 
 **FORBIDDEN**：禁止移除原始 HTML 元素的 `class`
 
 ---
 
-## QInput
+## 表單輸入元件
 
-### 適用 JSP Pattern
-
-- `<input type="text">`
-- `<input type="password">`
-- `<textarea>`
-
-### 常用 Props
+### QInput
 
 | Props | 型別 | 說明 |
 |---|---|---|
 | `v-model` | `string` | 綁定欄位值 |
-| `label` | `string` | 欄位標籤 |
 | `type` | `string` | 輸入類型，預設 `text` |
 | `maxlength` | `number` | 最大輸入長度，對應原始 `maxlength` |
 | `readonly` | `boolean` | 唯讀，對應原始 `readonly` |
 | `disabled` | `boolean` | 停用，對應原始 `disabled` |
+| `dense` | `boolean` | 緊湊模式 |
+| `outlined` | `boolean` | 外框風格 |
 | `:error` | `boolean` | 是否顯示錯誤狀態，綁定 `!!errors.fieldName` |
 | `:error-message` | `string` | 錯誤訊息，綁定 `errors.fieldName` |
 
-### 標準結構
-
-```vue
-<!-- JSP -->
-<input
-    id="FIELD_NAME"
-    name="FIELD_NAME"
-    type="text"
-    class="textBox2"
-    maxlength="10"
-    readonly
-/>
-
-<!-- Vue -->
-<QInput
-    name="FIELD_NAME"
-    v-model="FIELD_NAME"
-    class="textBox2"
-    :maxlength="10"
-    :readonly="true"
-    :error="!!errors.FIELD_NAME"
-    :error-message="errors.FIELD_NAME"
-/>
-```
-
----
-
-## QSelect
-
-### 常用 Props
+### QSelect
 
 | Props | 型別 | 說明 |
 |---|---|---|
@@ -81,38 +51,7 @@
 | `:error` | `boolean` | 是否顯示錯誤狀態，綁定 `!!errors.fieldName` |
 | `:error-message` | `string` | 錯誤訊息，綁定 `errors.fieldName` |
 
-### 標準結構
-
-```vue
-<!-- JSP -->
-<select id="CITY" name="CITY" class="selectBox">
-  <c:forEach var="map" items="${CITY_LIST}">
-    <option value="${map.key}">${map.value}</option>
-  </c:forEach>
-</select>
-
-<!-- Vue -->
-<QSelect
-  v-model="CITY"
-  name="CITY"
-  class="selectBox"
-  :options="cityList"
-  option-value="key"
-  option-label="value"
-  emit-value
-  map-options
-  dense
-  outlined
-  :error="!!errors.CITY"
-  :error-message="errors.CITY"
-/>
-```
-
----
-
-## QCheckbox
-
-### 常用 Props
+### QCheckbox
 
 | Props | 型別 | 說明 |
 |---|---|---|
@@ -120,27 +59,9 @@
 | `val` | `any` | 多選時對應的值，對應原始 `value` |
 | `label` | `string` | 顯示文字 |
 | `disable` | `boolean` | 停用 |
+| `dense` | `boolean` | 緊湊模式 |
 
-### 標準結構
-
-```vue
-<!-- JSP -->
-<input type="checkbox" id="AGREE" name="AGREE" class="checkbox" value="Y" />
-
-<!-- Vue -->
-<QCheckbox
-  v-model="AGREE"
-  name="AGREE"
-  class="checkbox"
-  val="Y"
-/>
-```
-
----
-
-## QRadio
-
-### 常用 Props
+### QRadio
 
 | Props | 型別 | 說明 |
 |---|---|---|
@@ -148,66 +69,18 @@
 | `val` | `any` | 此選項對應的值，對應原始 `value` |
 | `label` | `string` | 顯示文字 |
 | `disable` | `boolean` | 停用 |
+| `dense` | `boolean` | 緊湊模式 |
 
-### 標準結構
-
-```vue
-<!-- JSP -->
-<input type="radio" id="r_query" name="functionSwitch" class="radio" value="0" />
-<input type="radio" id="r_areaCodeQuery" name="functionSwitch" class="radio" value="1" />
-
-<!-- Vue -->
-<QRadio
-  v-model="functionSwitch"
-  name="functionSwitch"
-  class="radio"
-  val="0"
-/>
-<QRadio
-  v-model="functionSwitch"
-  name="functionSwitch"
-  class="radio"
-  val="1"
-/>
-```
-
----
-
-## QBtn
-
-### 常用 Props
+### QBtn
 
 | Props | 型別 | 說明 |
 |---|---|---|
 | `label` | `string` | 按鈕文字，對應原始 `value` |
 | `@click` | `function` | 點擊事件，對應原始 `onclick` |
 | `disable` | `boolean` | 停用 |
+| `dense` | `boolean` | 緊湊模式 |
 
-### 標準結構
-
-```vue
-<!-- JSP -->
-<input
-  id="btn_query"
-  name="btn_query"
-  type="button"
-  class="button"
-  value="查詢"
-/>
-
-<!-- Vue -->
-<QBtn
-  class="button"
-  label="查詢"
-  @click="doQuery"
-/>
-```
-
----
-
-## QFile
-
-### 常用 Props
+### QFile
 
 | Props | 型別 | 說明 |
 |---|---|---|
@@ -217,28 +90,77 @@
 | `dense` | `boolean` | 緊湊模式 |
 | `outlined` | `boolean` | 外框風格 |
 
-### 標準結構
+### q-field
+
+相同 `name` 屬性的 `QCheckbox` 與 `QRadio` 必須使用 `q-field` 包裹，統一處理錯誤訊息顯示。
+
+| Props | 型別 | 說明 |
+|---|---|---|
+| `:error` | `boolean` | 是否顯示錯誤狀態，綁定 `!!errors.fieldName` |
+| `:error-message` | `string` | 錯誤訊息，綁定 `errors.fieldName` |
+| `dense` | `boolean` | 緊湊模式 |
+| `borderless` | `boolean` | 移除邊框，避免與內部元件樣式衝突 |
+
+### 轉換範例
 
 ```vue
-<!-- JSP -->
-<input type="file" id="UPLOAD_FILE" name="UPLOAD_FILE" class="fileInput" accept=".pdf" />
+<!-- JSP：表單輸入 -->
+<input
+  id="FIELD_NAME"
+  name="FIELD_NAME"
+  type="text"
+  class="textBox2"
+  maxlength="10"
+  readonly
+/>
 
 <!-- Vue -->
-<QFile
-  v-model="UPLOAD_FILE"
-  name="UPLOAD_FILE"
-  class="fileInput"
-  accept=".pdf"
+<QInput
+  id="FIELD_NAME"
+  name="FIELD_NAME"
+  v-model="FIELD_NAME"
+  class="textBox2"
+  :maxlength="10"
+  :readonly="true"
   dense
   outlined
+  :error="!!errors.FIELD_NAME"
+  :error-message="errors.FIELD_NAME"
 />
+
+<!-- JSP：選擇元件群組 -->
+<input type="radio" name="STATUS" class="radio" value="1" />啟用
+<input type="radio" name="STATUS" class="radio" value="2" />停用
+
+<!-- Vue -->
+<q-field
+  dense
+  borderless
+  :error="!!errors.STATUS"
+  :error-message="errors.STATUS"
+>
+  <QRadio
+    v-model="STATUS"
+    name="STATUS"
+    class="radio"
+    val="1"
+    dense
+  />啟用
+  <QRadio
+    v-model="STATUS"
+    name="STATUS"
+    class="radio"
+    val="2"
+    dense
+  />停用
+</q-field>
 ```
 
 ---
 
-## QMarkupTable
+## 表格元件
 
-### 常用 Props
+### QMarkupTable
 
 | Props | 型別 | 說明 |
 |---|---|---|
@@ -246,7 +168,7 @@
 | `bordered` | `boolean` | 顯示邊框，對應原始 `border` |
 | `dense` | `boolean` | 緊湊模式 |
 
-### 標準結構
+### 轉換範例
 
 ```vue
 <!-- JSP -->
@@ -258,7 +180,13 @@
 </table>
 
 <!-- Vue -->
-<QMarkupTable class="tbBox2" bordered flat dense :style="{ width: '100%', borderSpacing: '1px' }">
+<QMarkupTable
+  class="tbBox2"
+  flat
+  bordered
+  dense
+  :style="{ width: '100%', borderSpacing: '1px' }"
+>
   <tr>
     <td class="tbYellow">欄位</td>
     <td class="tbYellow2">值</td>
@@ -266,11 +194,15 @@
 </QMarkupTable>
 ```
 
+> 此範例 `QMarkupTable` 新增的 :style 為棄用 HTML 屬性翻新，並非推論樣式
+
 ---
 
-## QDialog（alert / confirm）
+## 通知元件
 
-### 標準結構
+### QDialog（alert / confirm）
+
+### 轉換範例
 
 ```vue
 <script setup>
