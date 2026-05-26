@@ -23,8 +23,9 @@ const pageStyle = computed(() => ({ minHeight: '100%', width: '100%' }))
         <div class="text-subtitle1 text-weight-bold">{{ title }}</div>
         <div class="text-caption">{{ pageNo ? `畫面編號：${pageNo}` : '' }}</div>
       </q-card-section>
+      <slot />
 
-      <q-separator v-if="!noPageFrame" />
+      <!-- <q-separator v-if="!noPageFrame" />
 
       <q-card-section class="pageui-content">
         <div class="text-subtitle2 pageui-subtitle">{{ subTitle }}</div>
@@ -46,7 +47,7 @@ const pageStyle = computed(() => ({ minHeight: '100%', width: '100%' }))
             </div>
           </div>
         </template>
-      </q-card-section>
+      </q-card-section> -->
     </q-card>
   </div>
 </template>

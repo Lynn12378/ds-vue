@@ -362,12 +362,12 @@ export function handleDSA30900(url, method, body) {
   if (method === 'POST' && url === '/DSA3_0900/getTOWN_LIST') {
     const cityName = body?.CITY_NAME ?? ''
     const list = TOWN_MAP[cityName] ?? []
-    return { matched: true, data: { TOWN_LIST: list } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, TOWN_LIST: list } }
   }
 
   // POST DSA3_0900/promptQuery
   if (method === 'POST' && url === '/DSA3_0900/promptQuery') {
-    return { matched: true, data: { rtnList: SAMPLE_ROWS } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, rtnList: SAMPLE_ROWS } }
   }
 
   // POST DSA3_0900/query  /  queryByDSA3_0900
@@ -375,7 +375,7 @@ export function handleDSA30900(url, method, body) {
     method === 'POST' &&
     (url === '/DSA3_0900/query' || url === '/DSA3_0900/queryByDSA3_0900')
   ) {
-    return { matched: true, data: { rtnList: SAMPLE_ROWS } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, rtnList: SAMPLE_ROWS } }
   }
 
   // POST DSA3_0900/landQuery  /  landQueryByDSA3_0900
@@ -383,7 +383,7 @@ export function handleDSA30900(url, method, body) {
     method === 'POST' &&
     (url === '/DSA3_0900/landQuery' || url === '/DSA3_0900/landQueryByDSA3_0900')
   ) {
-    return { matched: true, data: { rtnList: LAND_ROWS } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, rtnList: LAND_ROWS } }
   }
 
   // POST DSA3_0900/groupQuery  /  groupQueryByDSA3_0900
@@ -391,7 +391,7 @@ export function handleDSA30900(url, method, body) {
     method === 'POST' &&
     (url === '/DSA3_0900/groupQuery' || url === '/DSA3_0900/groupQueryByDSA3_0900')
   ) {
-    return { matched: true, data: { rtnList: GROUP_ROWS } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, rtnList: GROUP_ROWS } }
   }
 
   // POST DSA3_0900/communityQuery  /  communityQueryByDSA3_0900
@@ -399,12 +399,12 @@ export function handleDSA30900(url, method, body) {
     method === 'POST' &&
     (url === '/DSA3_0900/communityQuery' || url === '/DSA3_0900/communityQueryByDSA3_0900')
   ) {
-    return { matched: true, data: { rtnList: COMMUNITY_ROWS } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, rtnList: COMMUNITY_ROWS } }
   }
 
   // POST DSA3_0900/areacodeQuery
   if (method === 'POST' && url === '/DSA3_0900/areacodeQuery') {
-    return { matched: true, data: { rtnMap: AREA_CODE_RESULT } }
+    return { matched: true, data: { ErrMsg: { returnCode: 0 }, rtnMap: AREA_CODE_RESULT } }
   }
 
   return { matched: false, data: null }

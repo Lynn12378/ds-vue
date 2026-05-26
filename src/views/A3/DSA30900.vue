@@ -212,13 +212,13 @@ const schema = object({
   addrNo: string()
     .test('validateAddr_No', '地址路名門牌與縣市別需擇一輸入', function (val) {
       return validateAddrNo(this.parent.applyId, this.parent.city, val)
-    })
-    .test('validateAddrAndLon', '【地址路名門牌】與【經度、緯度】需擇一輸入', function (val) {
-      return validateAddrAndLon(val, this.parent.longitude, this.parent.latitude)
-    })
-    .test('validateFullAddrNo', '使用地址查詢，請輸入完整門牌', function (val) {
-      return validateFullAddrNoFn(val)
     }),
+    // .test('validateAddrAndLon', '【地址路名門牌】與【經度、緯度】需擇一輸入', function (val) {
+    //   return validateAddrAndLon(val, this.parent.longitude, this.parent.latitude)
+    // })
+    // .test('validateFullAddrNo', '使用地址查詢，請輸入完整門牌', function (val) {
+    //   return validateFullAddrNoFn(val)
+    // }),
   // LONGITUDE
   longitude: string(),
   // LATITUDE
@@ -237,10 +237,10 @@ const schema = object({
       return validateBetween(this.parent.buildAge1, val)
     }),
   // CASE_NAME (valid2 validateCase_Name)
-  caseName: string()
-    .test('validateCase_Name', '案名與縣市別需擇一輸入', function (val) {
-      return validateCaseName(this.parent.city, val)
-    }),
+//   caseName: string()
+//     .test('validateCase_Name', '案名與縣市別需擇一輸入', function (val) {
+//       return validateCaseName(this.parent.city, val)
+//     }),
   // LAND_MEASURE1
   landMeasure1: number().positive().integer(),
   // LAND_MEASURE2
