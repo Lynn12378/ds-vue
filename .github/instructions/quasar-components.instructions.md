@@ -50,34 +50,7 @@ description: Quasar Components 使用規範
 
 ## 日期選擇器規範
 
-`<input type="text"> + <img calendar.gif>` 替換為 `<q-input>` + `<q-popup-proxy>` + `<q-date>`：
-
-```vue
-<%-- JSP --%>
-<%-- <input type="text" id="START_DATE" class="validate-ROCDate" maxlength="7"> --%>
-<%-- <img onclick="getCalendarFor($('START_DATE'))"> --%>
-```
-
-```vue
-<q-input
-  v-model="startDate"
-  dense outlined
-  maxlength="7"
-  :error="!!errors.startDate"
-  :error-message="errors.startDate"
->
-  <template #append>
-    <q-icon name="event" class="cursor-pointer">
-      <q-popup-proxy cover>
-        <q-date v-model="startDate" mask="YYYYMMDD" />
-      </q-popup-proxy>
-    </q-icon>
-  </template>
-</q-input>
-```
-
----
-
-## 日期選擇器規範
-
-`<input type="text"> + <img calendar.gif>` 替換規範詳見 [calendar.instructions.md](jsp/calendar.instructions.md)。
+`<input type="text"> + <img calendar.gif>` 的翻新規範詳見 [calendar.instructions.md](jsp/calendar.instructions.md)，包含：
+- ROCDate / 西元日期的 mask 對應
+- `maxlength` 與格式長度對應規則
+- 標準轉換片段（含三種格式範例）

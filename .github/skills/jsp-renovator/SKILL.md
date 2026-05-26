@@ -138,7 +138,7 @@ user-invocable: true
 
 識別：以下項目視為自訂資源，依 [自訂資源翻新指引](../../instructions/jsp/{resourceName}.md) 翻新，無對應文件則 Fallback。
 
-- 外部 `.js` 檔案引用的函式（`CSRUtil.*`、`PageUI.*`、`Date.toROC()` 等）
+- 外部 `.js` 檔案引用的函式（`CSRUtil.*`、`PageUI.*`、`popupWin.*`、`Date.toROC()` 等）
 - non-core Taglib（`cathay:*`、`dz:*`、`CXL:*`、`fmt:*`）
 - JSP include（`<%@ include file="..."%>`）
 - Java 類別呼叫（`DateUtil.*`、`StringUtils.*` 等）

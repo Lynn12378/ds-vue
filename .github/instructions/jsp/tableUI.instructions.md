@@ -24,7 +24,52 @@ description: JSP `TableUI.js` 舊用法遷移到 Vue3 `TableUI.vue` 新用法對
 | `column.header` | `columns[].label` | 直接映射 | - |
 | `column.key` | `columns[].field` | 直接映射 | - |
 | `column.attrs.width` | `columns[].style` | 轉換為 style 綁定 | - |
-| `column.input` | `<template #body-cell-xxx>` | 自訂儲存格模板 | - |
+| `column.input` | `<template #body-cell-xxx>` | 詳見下方「column.input 速查表」 | - |
+
+---
+
+## column.input 速查表
+
+> 所有 autoInput 欄位一律使用 `<template #body-cell-{key}>` slot 實作，`dense outlined` 樣式依 Quasar 規範套用。
+
+| `input.type` | Quasar 元件 | 備註 |
+|---|---|---|
+| `text` | `<q-input dense outlined v-model="row[key]" @update:model-value="...">` | change 事件對應 `input.action` |
+| `number` | `<q-input dense outlined type="number" v-model="row[key]" @blur="...">` | blur 事件對應 `input.action` |
+| `date` | `<q-input>` + `<q-popup-proxy>` + `<q-date mask="YYYY-MM-DD">` | 詳見 calendar.instructions.md |
+| `rocdate` | `<q-input>` + `<q-popup-proxy>` + `<q-date mask="YYYMMDD">` | 詳見 calendar.instructions.md |
+| `select` | `<q-select dense outlined emit-value map-options :options="..." v-model="row[key]">` | `opts` 對應 `:options` |
+| `checkbox` | `<q-checkbox v-model="row[key]" true-value="Y" false-value="N" @update:model-value="...">` | 單選時 value 為 `'Y'`/`'N'` |
+| `radio` | `<q-radio v-model="row[key]" :val="opt.key" @update:model-value="...">` 搭配 `v-for` | `opts` 展開為多個 radio |
+| `textarea` | `<q-input dense outlined type="textarea" v-model="row[key]" @update:model-value="...">` | - |
+| `button` | `<q-btn dense :label="..." @click="input.action(row)">` | - |
+| `show` | 純文字展開，無 input | `shortTextLength` 控制截斷長度 |
+
+```vue
+<!-- 範例：type='text' -->
+<template #body-cell-REMARK="props">
+  <q-td :props="props">
+    <q-input
+      dense outlined
+      v-model="props.row.REMARK"
+      @update:model-value="val => onRemarkChange(props.row, val)"
+    />
+  </q-td>
+</template>
+
+<!-- 範例：type='select' -->
+<template #body-cell-STATUS="props">
+  <q-td :props="props">
+    <q-select
+      dense outlined
+      emit-value map-options
+      v-model="props.row.STATUS"
+      :options="statusOptions"
+      @update:model-value="val => onStatusChange(props.row, val)"
+    />
+  </q-td>
+</template>
+```
 
 ---
 
