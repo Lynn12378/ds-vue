@@ -1,6 +1,6 @@
 ---
 name: jsp-renovator
-description: 將單頁 Legacy JSP 翻新為 Vue 3 SFC，業務行為等價還原，無法翻新項目以 TODO 標記。
+description: 將單頁 Legacy JSP 翻新為 Vue 3 SFC
 argument-hint: jsp=<JSP 檔案路徑>
 disable-model-invocation: true
 user-invocable: true
@@ -11,14 +11,14 @@ user-invocable: true
 ## Goals
 
 ### Primary
-將單頁 Legacy JSP 翻新為等價的 Vue 3 SFC。
+基於技術翻新與 Server-side 注入資料來源補全，
+將單頁 Legacy JSP 翻新為符合專案前端規範的 Vue 3 SFC。
 
 ### Secondary
-1. 完整保留 JSP 內部可見的業務邏輯與版面結構
-2. 依專案規範執行技術棧替換
-3. 依明確規則補償 Server-side 注入資料
-4. 自訂資源依對應文件翻新，無文件一律 Fallback composable
-5. 產出可運行的 Vue SFC 與路由更新
+1. JSP 檔案內逐字可見的程式碼完整翻新至對應技術棧
+2. 技術棧行為落差、無等價技術棧、自訂資源的項目須依翻新指引正確轉換
+3. Server-side 注入資料來源依規範文件補全
+4. 產出可運行的 Vue SFC 與路由更新
 
 ---
 
@@ -27,29 +27,27 @@ user-invocable: true
 ### Scope Boundaries
 
 - **REQUIRED**
-  - JSP 內部可見的業務規格必須完整還原
-  - 技術棧翻新依 `.github/instructions/**` 規範執行
+  - 翻新來源僅限 JSP 檔案內逐字可見的程式碼
+  - 技術棧行為落差、無等價技術棧、自訂資源的項目須依對應翻新指引轉換
+  - 無翻新指引的項目一律 Fallback，不得推論實作
   - 不確定的翻新必須標記 FIXME/TODO，不得跳過
 
 - **FORBIDDEN**
-  - 禁止規範文件以外的行為改變
-  - 禁止參照其他頁面寫法調整或新增不存在的頁面規格
-  - 禁止主動優化或簡化原始業務邏輯
-  - 禁止在分析報告（Step 1 產出）之外自行新增翻新決策
-  - 禁止 Step 2～4 執行時重新解讀 JSP 或推測未記錄的決策
+  - 禁止推論、補充 JSP 檔案內未逐字可見的程式碼
+  - 禁止在無對應翻新指引的情況下實作自訂資源或無等價技術棧項目的內部邏輯
+  - 禁止參照其他頁面寫法新增不存在於當前 JSP 的規格
+  - 禁止主動優化或簡化原始程式碼
 
 ### Technology Constraints
 
-| 技術 | 說明 |
-|---|---|
-| Vue 3（Composition API，`<script setup>`） | 核心框架 |
-| Quasar Framework | UI 元件庫 |
-| Pinia | 狀態管理 |
-| Vue Router | 路由 |
-| VeeValidate（Composition API）+ Yup | 表單驗證 |
-| customAxios（`@/assets/libs/axios/instance.js`） | HTTP 請求 |
-| Day.js | 日期處理 |
-| JavaScript | Script 語言 |
+- **核心框架**：Vue 3（Composition API，`<script setup>`）
+- **UI 元件庫**：Quasar Framework
+- **狀態管理**：Pinia
+- **路由**：Vue Router
+- **表單驗證**：VeeValidate（Composition API）+ Yup
+- **HTTP 請求**：customAxios（`@/assets/libs/axios/instance.js`）
+- **日期處理**：dayjs
+- **Script 語言**：JavaScript
 
 ### Output Constraints
 
