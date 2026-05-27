@@ -7,6 +7,7 @@
 - 識別 JSP 同組 id 的 `<input id="FIELD_NAME" ... />` + `<img src="...calendar.gif">` + `getCalendar('FIELD_NAME')` 日期選擇器，翻新為標準 Pattern（見下方）
 - **IF** `<input>` 使用 `datatype="ROCDate"` **THEN** `CustomDate` 綁定 `:datatype="'ROC'"`
 - **ELSE** 預設使用西元日期，無需額外設定 `datatype`
+- 同層 `<td>` 的日期選擇器必須用`<q-field>` 包裹
 
 **FORBIDDEN**：
 - 禁止直接使用 `QDate`，一律透過 `CustomDate` 封裝
