@@ -22,7 +22,7 @@
 |---|---|
 | `table` | 以 `<CustomTable>` 替換對應位置的 `<table>` |
 | `column` | 翻新為 `columns` prop，見 R-col |
-| `headerColumn` / `split` | 翻新為 `:header-rows` prop，見 R-header |
+| `headerColumn` / `split` | **不遷移**（多列 header 造成版面跑版，直接移除） |
 | `pageSize` | `:pagination="{ rowsPerPage: N }"`（0 = 顯示全部） |
 | `title` | `:title="'標題文字'"` |
 | `needHeader: false` | `hide-header` |
@@ -71,7 +71,9 @@
 
 ### R-header：多列 Header（`headerColumn` / `split`）
 
-見子文件 [TableUI/headerRows.md](./TableUI/headerRows.md)
+**不遷移**。多列 header 會覆蓋 QTable 預設的 `#header` slot 渲染，造成版面跑版。
+
+翻新時直接忽略 `config.headerColumn` 與 `config.split`，`<CustomTable>` 不傳入 `:header-rows`，使用 QTable 預設單行 header。
 
 ---
 

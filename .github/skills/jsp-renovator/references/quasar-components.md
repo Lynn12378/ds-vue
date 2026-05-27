@@ -15,6 +15,7 @@
 ### 驗證錯誤
 
 - **IF** 表單有驗證狀態 **THEN** 必須綁定 `:error="!!errors.fieldName"` 與 `:error-message="errors.fieldName"`
+- 同層 `<td>` 的表單元件必須必須使用 `q-field`
 - 相同 `name` 屬性的 q-checkbox、q-radio 必須使用 `q-field` 包裹；**IF** 有驗證狀態 **THEN** 由外層 `q-field` 統一處理 `:error` 與 `:error-message`
 
 ### 樣式風格
@@ -90,6 +91,10 @@
   <tr>
     <td class="tbYellow">欄位</td>
     <td class="tbYellow2">值</td>
+    <td>
+      <input type="number" name="AMOUNT" class="textBox2" />
+      <input type="text" name="DESCRIPTION" class="textBox2" />
+    </td>
   </tr>
 </table>
 
@@ -105,6 +110,14 @@
   <tr>
     <td class="tbYellow">欄位</td>
     <td class="tbYellow2">值</td>
+    <td>
+      <q-field
+        dense
+        borderless
+      >
+        <q-input v-model="AMOUNT" name="AMOUNT" class="textBox2" type="number" dense outlined />
+        <q-input v-model="DESCRIPTION" name="DESCRIPTION" class="textBox2" dense outlined />
+      </q-field>
   </tr>
 </q-markup-table>
 ```
