@@ -333,6 +333,7 @@ const use{ResourceName} = () => {
 - [ ] 所有過時 HTML 樣式屬性（`align`、`bgcolor` 等）已改為 `:style` binding
 
 ### R2 規範輔助翻新
+- [ ] 同層 `<td>` 的表單元件已用 `<q-field>` 包裹
 - [ ] 所有 Server-side 注入語法已識別且無遺漏
 - [ ] 所有 R2-3 補全項目已標記 `// FIXME: Server-side 資料來源待確認`
 
