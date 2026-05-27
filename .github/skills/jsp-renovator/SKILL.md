@@ -330,6 +330,7 @@ const use{ResourceName} = () => {
 ### R1 直接翻新
 - [ ] 所有移除項目已移除，無殘留
 - [ ] 所有原始 CSS class 完整保留於對應節點
+- [ ] 所有過時 HTML 樣式屬性（`align`、`bgcolor` 等）已改為 `:style` binding
 
 ### R2 規範輔助翻新
 - [ ] 所有 Server-side 注入語法已識別且無遺漏
