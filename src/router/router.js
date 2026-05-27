@@ -1,5 +1,4 @@
 import BaseLayout from '@/components/BaseLayout.vue'
-// import { demoRoutes } from '@/router/demo-routes.js'
 
 export const routes = [
     {
