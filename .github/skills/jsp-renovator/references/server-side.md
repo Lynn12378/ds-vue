@@ -18,7 +18,7 @@
 
 ```js
 import { ref, onMounted } from 'vue'
-import customAxios from '@/assets/libs/axios/instance.js'
+import customAxios from '@/assets/libs/customAxios/index.js'
 
 // ${原始變數名稱}
 const xxx = ref(null)
