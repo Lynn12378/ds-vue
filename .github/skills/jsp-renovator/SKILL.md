@@ -255,7 +255,8 @@ const use{ResourceName} = () => {
 
 ### Step 1：決策分析
 
-掃描 JSP 全文，逐條識別所有需要 R2 / R3 處理的項目，建立內部決策表。決策表不輸出至對話視窗。
+掃描 JSP 全文，逐條識別所有需要 R2 / R3 處理的項目，建立內部決策表。
+**REQUIRED**：決策表靜默分析，不輸出至對話視窗。
 
 **REQUIRED**：每個識別項目必須完成下列三個欄位，全部完成後才可進入 Step 2：
 
@@ -279,7 +280,7 @@ const use{ResourceName} = () => {
 
 1. R2-1：Quasar 元件替換（R2-1 EXCEPTION 項目不在此處理，留至 Step 5）
 2. R2-2：表單驗證翻新
-3. R2-3：Server-side 資料補全；每個補全項目標記 `// FIXME: Server-side 資料來源待確認`
+3. R2-3：Server-side 資料補全
 
 ### Step 5：R3 自訂資源翻新
 
