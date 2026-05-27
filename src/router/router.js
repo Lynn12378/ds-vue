@@ -1,19 +1,23 @@
+import BaseLayout from '@/components/BaseLayout.vue'
+// import { demoRoutes } from '@/router/demo-routes.js'
+
 export const routes = [
     {
-        // 此為首頁路由，請替勿在此路徑添加子路由
-        path: '/',
+        path: '',
         name: 'home',
     },
-    // 請替換為實際路徑
+    // ...demoRoutes,
+    // 其他業務路由請依照以下範例格式新增路由，並替換路徑、名稱與元件引用路徑
     // {
-    //     path: `{Module}`,
-    //     name:  `/{Module}`,
+    //     path: {Module},
+    //     name:  /{Module},
+    //     component: BaseLayout,
     //     children: [
     //         {
-    //             path: `{FileName}`
-    //             name: `{FileName}`
+    //             path: {FileName}
+    //             name: {FileName}
     //             component: () => import('@/views/{Module}/{FileName}.vue')
     //         }
     //     ]
     // }
-];
+]

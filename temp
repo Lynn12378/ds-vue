@@ -1,0 +1,251 @@
+# TableUI.js 翻新計劃
+
+## 策略說明
+
+採**薄封裝策略**：`CustomTable` 只處理 q-table 原生不支援的結構性問題，其餘由頁面 slot / props 自行組合。
+
+| 封裝於 CustomTable | 頁面自行實作 |
+|---|---|
+| 多列 header（`split` / `headerColumn`） | autoInput（q-input、q-select、CustomDate 等） |
+| rowSpan 欄位合併（`groupKey`） | 勾選邏輯（q-table 內建 selection） |
+| 固定欄位（`fixedColumns`，CSS sticky） | 合計列 / 小計列（`bottom-row` slot） |
+| | 資料驗證標示 |
+| | XLS 匯出（SheetJS） |
+
+---
+
+## Task 清單
+
+### TASK-01　建立 `CustomTable` 元件骨架
+
+**目標**：建立 `src/components/common/table/CustomTable.vue`，作為後續所有 Task 的基礎。
+
+**需求**：
+- 以 `q-table` 為底層，透過 `v-bind="$attrs"` 讓頁面可直接傳入所有 q-table 原生 props（`rows`、`pagination`、`loading` 等）
+- 預設加上 `flat`、`bordered`、`dense`
+- 開放所有 q-table 原生 slot 透傳（`v-slot` pass-through）
+- Props：
+  - `columns`：`Array`，必填，欄位定義（格式見 TASK-02）
+
+**驗收**：
+- 傳入 `rows` 與 `columns` 可正常渲染基本表格
+- q-table 原生 props 與 slot 均可由頁面直接使用
+
+---
+
+### TASK-02　多列 Header（`split` / `headerColumn`）
+
+**目標**：支援原始 TableUI `split` 與 `headerColumn` 產生的多列 header。
+
+**背景**：q-table 的 `columns` 只支援單列 header，原始 TableUI 可透過 `split` 將欄位切成多行，或透過 `headerColumn` 定義獨立的 header 結構（含 `colSpan`、`rowSpan`）。
+
+**需求**：
+- 新增 prop `headerRows`：`Array<Array<Object>>`，每個物件含：
+  - `label`：string，顯示文字
+  - `colspan`：number，預設 1
+  - `rowspan`：number，預設 1
+  - `field`：string（選填），對應 `columns` 的 `name`，用於排序綁定
+- 當 `headerRows` 存在時，使用自訂 `header` slot 渲染多列 `<tr>`，取代 q-table 預設 header
+- 當 `headerRows` 不存在時，fallback 為 q-table 預設 header 渲染
+
+**JSP 對應**：
+```js
+// 原始
+new TableUI({
+  column: [...],
+  split: ['KEY_A', 'KEY_B'],
+  headerColumn: [[{ header: '群組A', attrs: { colSpan: 2 } }, ...]]
+})
+```
+```vue
+<!-- 翻新 -->
+<CustomTable
+  :columns="columns"
+  :header-rows="headerRows"
+  :rows="rows"
+/>
+```
+
+**驗收**：
+- 傳入 `headerRows` 可正確渲染多列 header，colSpan / rowSpan 正確
+- 未傳入 `headerRows` 時退回單列 header，不影響原有行為
+
+---
+
+### TASK-03　rowSpan 欄位合併（`groupKey`）
+
+**目標**：支援相同值的相鄰列自動合併（原始 TableUI `groupKey` 行為）。
+
+**背景**：q-table 預設每列獨立渲染，不支援跨列 `rowspan`。原始 TableUI 依 `groupKey` 比對相鄰列的指定欄位值，若相同則合併該欄的 `<td>`。
+
+**需求**：
+- 新增 prop `groupKeys`：`Array<string>`，指定需要合併的欄位 `name` 清單
+- CustomTable 在渲染前預處理 `rows`，計算每個 groupKey 欄位的 rowspan：
+  - 比對相鄰列指定欄位的值，相同則累加 rowspan，後續列該欄位標記為 skip
+- 使用自訂 `body` slot 渲染，skip 的欄位不輸出 `<td>`，首列輸出帶 `rowspan` 的 `<td>`
+- groupKey 合併以 `groupKeys` 陣列內所有欄位值**皆相同**為條件（對應原始 TableUI 的 group 判斷邏輯）
+
+**JSP 對應**：
+```js
+// 原始
+column: [
+  { key: 'DEPT', header: '部門', groupKey: 1 },
+  { key: 'NAME', header: '姓名' }
+]
+```
+```vue
+<!-- 翻新 -->
+<CustomTable
+  :columns="columns"
+  :rows="rows"
+  :group-keys="['DEPT']"
+/>
+```
+
+**驗收**：
+- 相鄰列 groupKey 欄位值相同時，`<td>` 正確合併並帶有 `rowspan`
+- 非 groupKey 欄位不受影響，各列獨立渲染
+- groupKey 欄位值不同時，各列獨立渲染
+
+---
+
+### TASK-04　固定欄位（`stickyColumns`，CSS sticky）
+
+**目標**：支援從左側固定指定欄位，水平捲動時保持可見。
+
+**背景**：原始 TableUI 透過 DOM 操作將固定欄位移至獨立的 `fixedDataArea`，實作複雜。新專案改以 CSS `position: sticky` 實現，無需雙表格結構。
+
+**需求**：
+- 新增 prop `stickyColumns`：`Array<string>`，指定需要固定的欄位 `name` 清單（從左側起算）
+- CustomTable 自動對 `stickyColumns` 內的欄位對應 `<th>` 與 `<td>` 加上：
+  - `position: sticky`
+  - `left`：依欄位順序累加計算偏移量（需能取得各欄寬度）
+  - `z-index`：header 的 sticky 欄位需高於 body
+- 表格容器需設定 `overflow-x: auto`
+
+**JSP 對應**：
+```js
+// 原始（fixedColumns 為 group 編號，翻新改為欄位 name）
+new TableUI({ fixedColumns: [0, 1] })
+```
+```vue
+<!-- 翻新 -->
+<CustomTable
+  :columns="columns"
+  :rows="rows"
+  :sticky-columns="['SEQ', 'NAME']"
+/>
+```
+
+**驗收**：
+- 水平捲動時，`stickyColumns` 內的欄位固定於左側可見
+- header 與 body 的 sticky 欄位垂直對齊
+- 未傳入 `stickyColumns` 時不影響原有行為
+
+---
+
+### TASK-05　頁面 autoInput 實作指引
+
+> 此 Task 不產生元件，為翻新指引文件，供 JSP 翻新 agent 參照。
+
+**目標**：產出 `references/js/TableUI.js.md`，定義 autoInput 各 type 在翻新後的標準 slot 寫法。
+
+**需求**：文件內容包含以下兩部分：
+
+#### autoInput type 映射表
+
+| 原始 `input.type` | 翻新寫法 |
+|---|---|
+| `text` | `body-cell-{name}` slot 內嵌 `q-input` |
+| `number` | `body-cell-{name}` slot 內嵌 `q-input type="number"` |
+| `date` | `body-cell-{name}` slot 內嵌 `q-input` + `CustomDate` popup-proxy |
+| `rocdate` | 同 `date`，`CustomDate` 加 `:datatype="'ROC'"` |
+| `textarea` | `body-cell-{name}` slot 內嵌 `q-input type="textarea"` |
+| `select` | `body-cell-{name}` slot 內嵌 `q-select` |
+| `checkbox` | `body-cell-{name}` slot 內嵌 `q-checkbox` |
+| `radio` | `body-cell-{name}` slot 內嵌 `q-radio` |
+| `button` | `body-cell-{name}` slot 內嵌 `q-btn` |
+| `show` | `body-cell-{name}` slot 純文字截斷顯示 |
+
+#### autoInput 共用屬性映射
+
+| 原始參數 | 翻新寫法 |
+|---|---|
+| `disableRule` | slot props 取得 `row`，`:disable="disableRule(row)"` |
+| `readOnlyRule` | `:readonly="readOnlyRule(row)"` |
+| `action` | `@update:model-value="(val) => action(props.row, val)"` |
+| `easyEdit` | 以 `v-if` / `v-else` 切換顯示區與輸入區，editing 狀態存於 `ref<Set>` |
+| `maxlength` | `:maxlength` |
+| `followText` | input 後方放置純文字或 `<span>` |
+
+#### 標準 slot 範例（text）
+
+```vue
+<template #body-cell-FIELD_NAME="props">
+  <td :class="props.col.classes">
+    <q-input
+      v-model="props.row.FIELD_NAME"
+      dense
+      outlined
+      :maxlength="10"
+      :disable="disableRule(props.row)"
+      @update:model-value="(val) => onFieldChange(props.row, val)"
+    />
+  </td>
+</template>
+```
+
+**驗收**：
+- 文件產出至 `references/js/TableUI.js.md`
+- 每個 autoInput type 均有對應範例程式碼
+
+---
+
+### TASK-06　XLS 匯出（SheetJS）
+
+**目標**：以純前端 SheetJS 取代原始 TableUI 向後端 POST `/ZRWeb/xls` 的匯出方式。
+
+**需求**：
+- 建立 `src/assets/utils/exportXls.js`，提供：
+  - `exportToXls(fileName, columns, rows)`
+    - `fileName`：匯出檔名（不含副檔名）
+    - `columns`：CustomTable 的 `columns` 陣列（取 `label` 為 header、`field` 為取值 key）
+    - `rows`：資料陣列
+  - 內部使用 SheetJS（`xlsx`）產生 `.xlsx` 並觸發瀏覽器下載
+- 安裝依賴：`npm install xlsx`
+
+**JSP 對應**：
+```js
+// 原始
+tableUI.exportAllToXLS('檔名')
+tableUI.exportCheckToXLS('檔名')
+```
+```js
+// 翻新
+import { exportToXls } from '@/assets/utils/exportXls.js'
+
+exportToXls('檔名', columns, rows.value)
+exportToXls('檔名', columns, selected.value)
+```
+
+**驗收**：
+- 呼叫後瀏覽器自動下載 `.xlsx` 檔案
+- header 列依 `columns[].label` 輸出
+- 資料列依 `columns[].field` 取值輸出
+- 不需後端配合
+
+---
+
+## 實作順序
+
+```
+TASK-01（骨架）
+    ├── TASK-02（多列 header）
+    ├── TASK-03（rowSpan 合併）
+    └── TASK-04（sticky 固定欄）
+
+TASK-05（翻新指引文件）　← 可平行
+TASK-06（XLS 匯出）　　　← 可平行
+```
+
+TASK-01 須優先完成，TASK-02 / 03 / 04 互相獨立可平行開發，TASK-05 / 06 與元件開發完全獨立。

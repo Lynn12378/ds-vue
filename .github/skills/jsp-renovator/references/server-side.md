@@ -7,7 +7,7 @@
 - 必須於 `onMounted` 呼叫 `doPrompt` 處理 Server-side 資料補全邏輯
 - `doPrompt` 必須使用 `customAxios.get('{Bean_Name}/prompt')` 取得 Response 並賦值需補全的資料
 - 補全的 Response key 必須與 JSP 原始碼的資料名稱**完全一致**
-- 所有補償資料必須標注 `// FIXME: 資料來源待確認`
+- 所有補全資料必須標注 `// FIXME: Server-side 資料來源待確認`
 
 **FORBIDDEN**：
 
@@ -25,7 +25,7 @@ const xxx = ref(null)
 
 const doPrompt = async () => {
   const resp = await customAxios.get('{Bean_Name}/prompt')
-  // FIXME: 資料來源待確認
+  // FIXME: Server-side 資料來源待確認
   xxx.value = resp.xxx
 }
 

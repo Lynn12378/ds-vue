@@ -1,0 +1,197 @@
+$legacy-green-light: #C7E49C
+$legacy-green-dark: #6B8D6D
+$legacy-yellow-soft: #FAFBE1
+$legacy-yellow-head: #EEF1A7
+$legacy-table-hover: rgba(199, 228, 156, .22)
+$legacy-table-selected: rgba(238, 241, 167, .55)
+
+.q-page,
+.q-layout,
+.q-card,
+.q-menu,
+.q-dialog__inner > .q-card
+  color: #000
+
+.q-card,
+.q-table__card,
+.q-banner,
+.q-menu
+  border: 1px solid rgba(107, 141, 109, .35)
+
+.q-card__section--vert
+  padding: 10px 12px
+
+.q-card__actions
+  padding: 4px 6px
+
+  .q-btn--rectangle
+    padding: 0 6px
+
+.q-btn
+  text-transform: none
+  min-height: 2.2em
+  letter-spacing: 0
+
+  &--dense
+    min-height: 1.8em
+
+.q-field
+  &__before, &__prepend
+    padding-right: 8px
+
+  &__after, &__append
+    padding-left: 8px
+
+  &__native, &__prefix, &__suffix, &__input
+    padding: 4px 0
+
+  &__bottom
+    min-height: 16px
+    padding: 2px 2px 0
+
+  &--filled .q-field__control,
+  &--outlined .q-field__control,
+  &--standout .q-field__control
+    padding: 0 8px
+
+.q-field--dense
+  .q-field__before, .q-field__prepend
+    padding-right: 4px
+
+  .q-field__after, .q-field__append
+    padding-left: 4px
+
+  &.q-field--labeled
+    .q-field__native, .q-field__prefix, .q-field__suffix
+      padding-top: 10px
+      padding-bottom: 1px
+
+.q-banner
+  min-height: 42px
+  padding: 6px 12px
+  background: $legacy-yellow-soft
+
+  &--top-padding
+    padding-top: 10px
+
+  &__avatar:not(:empty) + .q-banner__content
+    padding-left: 10px
+
+  &__actions
+    &.col-auto
+      padding-left: 10px
+
+    &.col-all .q-btn-item
+      margin: 2px 0 0 2px
+
+  &--dense
+    min-height: 28px
+    padding: 6px
+
+.q-item
+  min-height: 40px
+  padding: 6px 12px
+
+.q-item > .q-item__section--thumbnail:first-child,
+.q-item > .q-focus-helper + .q-item__section--thumbnail
+  margin-left: -12px
+
+.q-item > .q-item__section--thumbnail:last-of-type
+  margin-right: -12px
+
+.q-item__section
+  &--side
+    padding-right: 12px
+
+  &--avatar
+    min-width: 44px
+
+.q-item__section--main ~ .q-item__section--side
+  padding-left: 12px
+
+.q-list--dense > .q-item, .q-item--dense
+  min-height: 28px
+  padding: 1px 12px
+
+.q-table
+  thead tr, tbody td
+    height: 40px
+
+  th, td
+    padding: 5px 10px
+
+  &__top
+    padding: 8px 10px
+
+  &__bottom
+    min-height: 40px
+    padding: 2px 10px
+
+  &__bottom-item
+    margin-right: 10px
+
+.q-table--dense
+  .q-table__top
+    padding: 4px 10px
+
+  .q-table__bottom
+    min-height: 30px
+
+  .q-table
+    th, td
+      padding: 3px 6px
+
+    thead tr, tbody tr, tbody td
+      height: 24px
+
+    th:first-child, td:first-child
+      padding-left: 10px
+
+    th:last-child, td:last-child
+      padding-right: 10px
+
+.q-table__bottom:not(.q-table__bottom--nodata)
+  background: $legacy-yellow-soft
+
+.q-table
+  thead
+    background: $legacy-yellow-head
+
+  tbody td:before
+    background: $legacy-table-hover
+
+  tbody td:after
+    background: $legacy-table-selected
+
+.q-dialog__inner--minimized
+  padding: 16px
+
+  > div
+    max-height: calc(100vh - 32px)
+
+.q-bar
+  &--standard
+    padding: 0 8px
+
+  > div, > div + .q-icon
+    margin-left: 6px
+
+@media (max-width: $breakpoint-xs-max)
+  .q-btn
+    min-height: 2em
+    padding: 2px 8px
+
+  .q-card__section--vert
+    padding: 8px 10px
+
+  .q-table
+    th, td
+      padding: 4px 6px
+
+    &__top, &__bottom
+      padding-left: 8px
+      padding-right: 8px
+
+  .q-item
+    padding-left: 10px
+    padding-right: 10px

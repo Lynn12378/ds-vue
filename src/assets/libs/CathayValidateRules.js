@@ -26,6 +26,11 @@
 import { string, number, date, addMethod } from "yup";
 
 // 驗證行動電話
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "mobile", function (errMsg) {
   return this.test({
     name: "mobile",
@@ -38,6 +43,11 @@ addMethod(string, "mobile", function (errMsg) {
 });
 
 // 驗證是否為Char
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "isChar", function (errMsg) {
   return this.test({
     name: "isChar",
@@ -49,6 +59,11 @@ addMethod(string, "isChar", function (errMsg) {
 });
 
 // 驗證日期格式(YYYYMMDD)
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "dateformatvalid", function (errMsg) {
   return this.test({
     name: "dateformatvalid",
@@ -82,6 +97,11 @@ addMethod(string, "dateformatvalid", function (errMsg) {
 });
 
 // 檢核有效數字格式
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateNumber", function (errMsg) {
   return this.test({
     name: "validateNumber",
@@ -95,6 +115,11 @@ addMethod(string, "validateNumber", function (errMsg) {
 });
 
 // 檢核英文字母
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateAlpha", function (errMsg) {
   return this.test({
     name: "validateAlpha",
@@ -106,6 +131,11 @@ addMethod(string, "validateAlpha", function (errMsg) {
 });
 
 // 檢核有效日期格式
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateDate", function (errMsg) {
   return this.test({
     name: "validateDate",
@@ -121,6 +151,11 @@ addMethod(string, "validateDate", function (errMsg) {
 });
 
 // 檢核有效日期格式 YYYY-MM-DD
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateDateDb", function (errMsg) {
   return this.test({
     name: "validateDateDb",
@@ -144,6 +179,11 @@ addMethod(string, "validateDateDb", function (errMsg) {
 });
 
 // 檢核正確的民國日期格式
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateROCDate", function (errMsg) {
   return this.test({
     name: "validateROCDate",
@@ -155,6 +195,11 @@ addMethod(string, "validateROCDate", function (errMsg) {
 });
 
 // 檢核正確之西元年月格式
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateDateYM", function (errMsg) {
   return this.test({
     name: "validateDateYM",
@@ -166,6 +211,11 @@ addMethod(string, "validateDateYM", function (errMsg) {
 });
 
 // 檢核正確之民國年月格式
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateROCDateYM", function (errMsg) {
   return this.test({
     name: "validateROCDateYM",
@@ -180,6 +230,11 @@ addMethod(string, "validateROCDateYM", function (errMsg) {
 });
 
 // 檢核時分格式(HH:MM)(24小時制)
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateHHMM", function (errMsg) {
   return this.test({
     name: "validateHHMM",
@@ -207,6 +262,12 @@ addMethod(string, "validateHHMM", function (errMsg) {
 });
 
 // 檢核開始時間不得大於結束時間 (HH:MM)
+/**
+ * 驗證規則方法定義。
+ * @param {any} targetId 參數 targetId。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateHHMMMax", function (targetId, errMsg) {
   return this.test({
     name: "validateHHMMMax",
@@ -225,6 +286,12 @@ addMethod(string, "validateHHMMMax", function (targetId, errMsg) {
 });
 
 // 檢核結束時間不得小於開始時間 (HH:MM)
+/**
+ * 驗證規則方法定義。
+ * @param {any} targetId 參數 targetId。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateHHMMMin", function (targetId, errMsg) {
   return this.test({
     name: "validateHHMMMin",
@@ -273,6 +340,12 @@ const validateHourTime = (str_time, end_time) => {
 };
 
 // 檢核民國起日不得大於迄日
+/**
+ * 驗證規則方法定義。
+ * @param {any} targetId 參數 targetId。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateROCDateMax", function (targetId, errMsg) {
   return this.test({
     name: "validateROCDateMax",
@@ -288,6 +361,12 @@ addMethod(string, "validateROCDateMax", function (targetId, errMsg) {
 });
 
 // 檢核民國迄日不得小於起日
+/**
+ * 驗證規則方法定義。
+ * @param {any} targetId 參數 targetId。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validateROCDateMin", function (targetId, errMsg) {
   return this.test({
     name: "validateROCDateMin",
@@ -303,6 +382,11 @@ addMethod(string, "validateROCDateMin", function (targetId, errMsg) {
 });
 
 // 身分證檢核
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validatorROCID", function (errMsg) {
   return this.test({
     name: "validatorROCID",
@@ -315,6 +399,11 @@ addMethod(string, "validatorROCID", function (errMsg) {
 });
 
 // 居留證檢核
+/**
+ * 驗證規則方法定義。
+ * @param {any} errMsg 參數 errMsg。
+ * @returns {any} 規則函式。
+ */
 addMethod(string, "validatorResidentID", function (errMsg) {
   return this.test({
     name: "validatorResidentID",
@@ -332,10 +421,18 @@ addMethod(string, "validatorResidentID", function (errMsg) {
  * @returns {*} 原值或undefined
  */
 const skipEmptyStr = (value) => (isNaN(value) ? undefined : value);
+/**
+ * 驗證規則方法定義。
+ * @returns {any} 規則函式。
+ */
 addMethod(date, "skipEmptyStr", function () {
   return this.transform(skipEmptyStr);
 });
 
+/**
+ * 驗證規則方法定義。
+ * @returns {any} 規則函式。
+ */
 addMethod(number, "skipEmptyStr", function () {
   return this.transform(skipEmptyStr);
 });
