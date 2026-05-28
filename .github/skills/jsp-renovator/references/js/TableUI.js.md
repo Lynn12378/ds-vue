@@ -161,3 +161,31 @@ import { exportToXls } from '@/assets/utils/exportXls.js'
 exportToXls('檔名', columns, rows.value)       // 原 tableUI.exportAllToXLS
 exportToXls('檔名', columns, selected.value)   // 原 tableUI.exportCheckToXLS
 ```
+
+---
+
+### 直接移除
+
+| 原始 config | 原因 |
+|---|---|
+| `config.headerColumn` / `config.split` | 多列 header 造成版面跑版 |
+| `config.overDiv: false` | `CustomTable` 預設無高度限制 |
+| `config.fixedColumns` | 頁面自行加 CSS `position: sticky` |
+| `config.printMode` | 列印模式，Vue SPA 不使用 |
+| `column.groupKey` | 影響排序正確性 |
+| `column.fixedColumn` | 頁面自行 CSS sticky |
+
+### Fallback
+
+| 原始 config | 原因 |
+|---|---|
+| `config.isLoadByFatch` | 後端分頁需頁面自行實作，見 R-server |
+| `config.beforeLoad` / `config.afterLoad` | 載入前後 callback，axios 請求前後自行處理 |
+| `config.pageChange` / `config.beforePageChange` | 換頁 callback，`@update:pagination` 自行處理 |
+| `config.validateRecord` / `config.validateRecordCheckedOnly` | 驗證邏輯，頁面自行實作 |
+| `config.allRenderInCount` | 合計列，`bottom-row` slot 自行處理 |
+| `config.hiddenColumns` | `visibleColumns` prop 自行管理 |
+| `column.hiddenColumn` | `visibleColumns` prop 自行管理 |
+| `column.renderInCount` | 合計列，`bottom-row` slot 自行處理 |
+| `tableUI.validTable()` | 整表驗證，頁面自行遍歷 `rows.value` |
+| `tableUI.getRecordsByCell(cell)` | DOM 操作，slot scope `row` 直接存取 |

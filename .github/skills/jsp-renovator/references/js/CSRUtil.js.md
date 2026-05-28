@@ -43,27 +43,32 @@ import { xxx } from '@/assets/utils/CSRUtil.js'
 
 ---
 
-### 不可翻新項目
+### 直接移除
 
-| 原始呼叫 | 處理方式 |
+| 原始呼叫 | 原因 |
 |---|---|
-| `CSRUtil.voToInputs(panel_id, vo)` | DOM 操作，一律 Fallback |
-| `CSRUtil.inputsToVo(panel_id, includeDisabled?)` | DOM 操作，一律 Fallback |
-| `CSRUtil.createCoverPage(inputOpts)` | DOM 操作，一律 Fallback |
-| `CSRUtil.AjaxHandler.request(...)` | 框架層邏輯，改用 `customAxios`，一律 Fallback |
-| `CSRUtil.getMsgBoard(msg, returnCode)` | DOM frame 操作，一律 Fallback |
-| `CSRUtil.clearTable(tableID)` | DOM 操作，一律 Fallback |
-| `CSRUtil.mapToSelectOptions(e, m, d)` | DOM 操作，改用 `q-select`，一律 Fallback |
-| `CSRUtil.listToSelectOptions(e, l, d)` | DOM 操作，改用 `q-select`，一律 Fallback |
-| `CSRUtil.mark(elem)` / `CSRUtil.unmark(elem)` | DOM 操作，改用 VeeValidate `:error` binding，一律 Fallback |
-| `CSRUtil.exportXls(...)` | 依賴舊 grid 元件，改用 `exportToXls`，一律 Fallback |
-| `CSRUtil.linkTo(linkParams, formID?)` | 頁面導覽，改用 `router.push`，一律 Fallback |
-| `CSRUtil.linkBack(backAction?, cbFuncOptions?)` | 頁面導覽，改用 `router.back()`，一律 Fallback |
-| `CSRUtil.getLP_JSON(remove?)` | 頁面導覽狀態，一律 Fallback |
-| `CSRUtil.isBackLink(formID?, backFunc?)` | 頁面導覽狀態，一律 Fallback |
-| `CSRUtil.clearLP_JSON()` | 頁面導覽狀態，一律 Fallback |
-| `CSRUtil.keepParamsManager.*` | 跨頁狀態管理，改用 Pinia store，一律 Fallback |
-| `CSRUtil.UICore.isOnTheSys(sysId)` | JSP 環境依賴，一律 Fallback |
-| `CSRUtil.hasInclude_jQuery()` / `CSRUtil.hasInclude_Prototype()` | JSP 環境依賴，直接移除 |
-| `autoFormatToDate()` | DOM 操作，新專案由 `q-input` 事件處理取代，直接移除 |
-| `autoFormatToNumber(elemID?)` | DOM 操作，新專案由 `q-input` 事件處理取代，直接移除 |
+| `CSRUtil.hasInclude_jQuery()` / `CSRUtil.hasInclude_Prototype()` | JSP 環境依賴 |
+| `autoFormatToDate()` | DOM 操作，`q-input` 事件處理取代 |
+| `autoFormatToNumber(elemID?)` | DOM 操作，`q-input` 事件處理取代 |
+
+### Fallback
+
+| 原始呼叫 | 原因 |
+|---|---|
+| `CSRUtil.voToInputs(panel_id, vo)` | DOM 操作 |
+| `CSRUtil.inputsToVo(panel_id, includeDisabled?)` | DOM 操作 |
+| `CSRUtil.createCoverPage(inputOpts)` | DOM 操作 |
+| `CSRUtil.AjaxHandler.request(...)` | 框架層，改用 `customAxios` |
+| `CSRUtil.getMsgBoard(msg, returnCode)` | DOM frame 操作 |
+| `CSRUtil.clearTable(tableID)` | DOM 操作 |
+| `CSRUtil.mapToSelectOptions(e, m, d)` | DOM 操作，改用 `q-select` |
+| `CSRUtil.listToSelectOptions(e, l, d)` | DOM 操作，改用 `q-select` |
+| `CSRUtil.mark(elem)` / `CSRUtil.unmark(elem)` | DOM 操作，改用 VeeValidate `:error` binding |
+| `CSRUtil.exportXls(...)` | 依賴舊 grid 元件，改用 `exportToXls` |
+| `CSRUtil.linkTo(linkParams, formID?)` | 頁面導覽，改用 `router.push` |
+| `CSRUtil.linkBack(backAction?, cbFuncOptions?)` | 頁面導覽，改用 `router.back()` |
+| `CSRUtil.getLP_JSON(remove?)` | 頁面導覽狀態管理 |
+| `CSRUtil.isBackLink(formID?, backFunc?)` | 頁面導覽狀態管理 |
+| `CSRUtil.clearLP_JSON()` | 頁面導覽狀態管理 |
+| `CSRUtil.keepParamsManager.*` | 跨頁狀態，改用 Pinia store |
+| `CSRUtil.UICore.isOnTheSys(sysId)` | JSP 環境依賴 |

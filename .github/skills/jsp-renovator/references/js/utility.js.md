@@ -34,24 +34,29 @@ import { xxx } from '@/assets/utils/utility.js'
 
 ---
 
-### 不可翻新項目
+### 直接移除
 
-| 原始呼叫 | 處理方式 |
+| 原始呼叫 | 原因 |
 |---|---|
-| `submitToUpper(element)` | DOM 操作，直接移除（Vue 無需手動大寫轉換） |
-| `copyKey(formx)` | DOM 操作，一律 Fallback |
-| `stat()` / `fix()` | DOM 操作，直接移除（Vue 佈局不依賴此機制） |
-| `jump(current, next, len)` | DOM 操作，改用 `@input` 事件自行實作，一律 Fallback |
-| `coverDocument(doc)` / `uncoverDocument(doc)` | DOM 操作，直接移除 |
-| `submitOnce(button, openWindow, coverOnly)` | 框架層邏輯，改用 `customAxios` 自然防重複，直接移除 |
-| `disableButton(theform)` / `enableButton(theform)` | DOM 操作，改用 `loading` ref 綁定 `:disable`，直接移除 |
-| `enableElements(elems)` | DOM 操作，改用 Vue reactive 狀態控制，直接移除 |
-| `keyWordReplaceFullSpace(frm, keyWord, ignoreCase?)` | DOM 操作，改用 `@blur` 事件自行處理，一律 Fallback |
-| `replaceFullSpace(frm)` | DOM 操作，改用 `@blur` 事件自行處理，一律 Fallback |
-| `trimSpace(frm)` | DOM 操作，改用 `@blur` 事件自行處理，一律 Fallback |
-| `showHintBox(bID)` / `hideHintBox(bID)` | DOM 操作，依賴全域 event 物件，一律 Fallback |
-| `utility.overrideSubmitByForm(theForm)` | JSP 框架依賴，直接移除 |
-| `utility.keepResponseTimeEndParameters(uuid)` | JSP 框架依賴，直接移除 |
-| `utility.keep_eBAF_parameter(opt)` | JSP 框架依賴，直接移除 |
-| `CSS_Selectors.*` | DOM 操作，Vue 不需此工具，直接移除 |
-| `pageSupport.*` | DOM 操作，JSP 環境依賴，直接移除 |
+| `submitToUpper(element)` | DOM 操作，Vue 無需手動大寫轉換 |
+| `stat()` / `fix()` | DOM 操作，Vue 佈局不依賴此機制 |
+| `coverDocument(doc)` / `uncoverDocument(doc)` | DOM 操作 |
+| `submitOnce(button, openWindow, coverOnly)` | 框架層，`customAxios` 自然防重複 |
+| `disableButton(theform)` / `enableButton(theform)` | DOM 操作，改用 `loading` ref 綁定 `:disable` |
+| `enableElements(elems)` | DOM 操作，改用 Vue reactive 狀態控制 |
+| `utility.overrideSubmitByForm(theForm)` | JSP 框架依賴 |
+| `utility.keepResponseTimeEndParameters(uuid)` | JSP 框架依賴 |
+| `utility.keep_eBAF_parameter(opt)` | JSP 框架依賴 |
+| `CSS_Selectors.*` | DOM 操作，Vue 不需此工具 |
+| `pageSupport.*` | JSP 環境依賴 |
+
+### Fallback
+
+| 原始呼叫 | 原因 |
+|---|---|
+| `copyKey(formx)` | DOM 操作，需人工確認替代方式 |
+| `jump(current, next, len)` | DOM 操作，改用 `@input` 事件自行實作 |
+| `keyWordReplaceFullSpace(frm, keyWord, ignoreCase?)` | DOM 操作，改用 `@blur` 事件自行實作 |
+| `replaceFullSpace(frm)` | DOM 操作，改用 `@blur` 事件自行實作 |
+| `trimSpace(frm)` | DOM 操作，改用 `@blur` 事件自行實作 |
+| `showHintBox(bID)` / `hideHintBox(bID)` | 依賴全域 event 物件，無等價實作 |

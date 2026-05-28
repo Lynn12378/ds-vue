@@ -8,7 +8,7 @@ validation.js 透過 HTML 元素的 `class` 屬性識別並驅動驗證規則，
 
 1. **validators**：識別頁面內所有 `Validation.add` / `Validation.addAllThese`，翻新為預定義 test 物件
 2. **schema**：識別頁面內所有 `new Validation()`，各自建立對應的 `object()` schema
-3. **useForm**：依頁面 `<form>` 元素，各自建立對應的 `useForm()`，並綁定 validationSchema 與錯誤訊息
+3. **useForm**：依頁面 `<form>` 元素，各自建立對應的 `useForm()`，並綁定 initialValues、 validationSchema 與錯誤訊息
 4. **表單送出與重置**：翻新所有表單送出與重置表單的函數結構
 
 ---
@@ -127,6 +127,7 @@ const validators = {
 ## R5. useForm 定義
 
 **REQUIRED**：依頁面 `<form>` 元素建立對應 `useForm()`，每個 `<form>` 各自建立獨立的 `useForm()`
+**REQUIRED**：`useForm()` 必須設定 `initialValues`，避免出現初始驗證錯誤
 **REQUIRED**：查找該 `<form>` 對應的所有 `new Validation(formId)` 群組：
   **IF** 對應單一 `new Validation()` **THEN** `validationSchema` 直接傳入對應 schema
   **IF** 對應多個 `new Validation()` **THEN** 建立 `currentValid` 與 `computed()` 動態切換 `validationSchema`
@@ -144,12 +145,19 @@ const validationSchema = computed(() => {
 
 const { errors, validate, resetForm, setValues } = useForm({
   validationSchema,
+  initialValues: {
+    /* 表單內部所有欄位都需定義初始值 */
+    FIELD1: '', // string 欄位
+    FIELD2: 0, // number 欄位
+    FIELD3: [], // array 欄位
+  },
   validateOnMount: false,
 })
 
 // 單一驗證群組
 const { errors, validate, resetForm, setValues } = useForm({
   validationSchema: valid1Schema,
+  initialValues: { /* 表單內部所有欄位都需定義初始值 */ },
   validateOnMount: false,
 })
 ```
@@ -251,6 +259,12 @@ const validationSchema = computed(() => {
 
 const { errors, validate, resetForm } = useForm({
   validationSchema,
+  initialValues: {
+    NAME: '',
+    START: 0,
+    END: 0,
+    EMAIL: '',
+  },
   validateOnMount: false,
 })
 

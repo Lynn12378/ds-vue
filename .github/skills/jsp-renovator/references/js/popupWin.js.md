@@ -9,7 +9,7 @@
 - `popupWin.back(args...)` / `window.popupWinBack(payload)` 對應 `@back` event
 
 **FORBIDDEN**：
-- 禁止使用 `createPopupLink` / `createPopupButton` / `windowOpen`（DOM 建立工具，全部移除）
+- 禁止使用 `createPopupLink` / `createPopupButton`（DOM 建立工具，全部移除）
 - 禁止保留 iframe 機制
 
 ---
@@ -64,15 +64,41 @@
 
 ---
 
-### 不可翻新項目
+### R-windowOpen：`popupWin.windowOpen(url, opts)`
 
-| 原始呼叫 | 處理方式 |
+改用 `useWindowOpen`（`@/composables/useWindowOpen.js`）。
+
+```js
+import { useWindowOpen } from '@/composables/useWindowOpen.js'
+const { windowOpen } = useWindowOpen()
+
+// 原始：popupWin.windowOpen('/DSA3_0500/prompt', { parameters: { APPLY_ID: id }, windowName: id })
+windowOpen({ name: 'DSA30500' }, { APPLY_ID: id }, id)
+```
+
+#### 參數對應
+
+| 原始 `opts` 參數 | `windowOpen` 參數 | 說明 |
+|---|---|---|
+| `url`（第一參數） | `route`：`{ name: '{FileName}' }` | 目標頁面 route name |
+| `opts.parameters` | `query`：`{ KEY: val }` | query string 參數 |
+| `opts.windowName` | `windowName` | 具名 tab，相同名稱不重複開窗 |
+
+---
+
+### 直接移除
+
+| 原始呼叫 | 替代方式 |
 |---|---|
-| `popupWin.createPopupLink(text, config)` | 直接移除，改用 `<q-btn @click="showPopup = true">` |
-| `popupWin.createPopupButton(text, config)` | 直接移除，改用 `<q-btn @click="showPopup = true">` |
-| `popupWin.createFullPopupLink(text, config)` | 直接移除 |
-| `popupWin.createFullPopupButton(text, config)` | 直接移除 |
-| `popupWin.windowOpen(url, opts)` | JSP form POST 開新視窗，一律 Fallback |
-| `config.resizable` | QDialog 無原生拖曳調整，一律 Fallback |
-| `config.movable` | QDialog 無原生拖曳移動，一律 Fallback |
-| `changeTopScrollHeight` / `rollBackTopScrollHeight` | 已廢棄，直接移除 |
+| `popupWin.createPopupLink(text, config)` | `<q-btn @click="showPopup = true">` |
+| `popupWin.createPopupButton(text, config)` | `<q-btn @click="showPopup = true">` |
+| `popupWin.createFullPopupLink(text, config)` | `<q-btn @click="showPopup = true">` |
+| `popupWin.createFullPopupButton(text, config)` | `<q-btn @click="showPopup = true">` |
+| `changeTopScrollHeight` / `rollBackTopScrollHeight` | 已廢棄，無替代 |
+
+### Fallback
+
+| 原始呼叫 | 原因 |
+|---|---|
+| `config.resizable` | QDialog 無原生拖曳調整大小支援 |
+| `config.movable` | QDialog 無原生拖曳移動位置支援 |

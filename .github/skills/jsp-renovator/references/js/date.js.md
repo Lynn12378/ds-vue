@@ -3,12 +3,10 @@
 ## Core Principles
 
 **REQUIRED**：
-
 - `date.js` 的工具函數一律改為從 `@/assets/utils/date.js` 具名 import
 - `dateJs.*` 命名空間的方法改為直接 import 對應函數
 
 **FORBIDDEN**：
-
 - 禁止自行實作日期運算邏輯
 
 ---
@@ -50,12 +48,17 @@ import { xxx } from '@/assets/utils/date.js'
 
 ---
 
-### 不可翻新項目
+### 直接移除
 
-| 原始函數 | 處理方式 |
+| 原始函數 | 原因 |
 |---|---|
-| `isHoliday(day)` | 資料已過期（硬編碼 93-94 年假日清單），一律 Fallback |
-| `getDutyDay(strDate, dudt, intMonth)` | 業務邏輯，依 JSP 原始碼直接翻新，可引用 `addDate` 實作 |
-| `toDBDate(inputDate)` | DOM 操作工具，直接移除 |
-| `dateFormatField(inputObj)` | DOM 操作工具，直接移除 |
-| `dateFieldChange(event)` | DOM 事件工具，直接移除 |
+| `toDBDate(inputDate)` | DOM 操作工具 |
+| `dateFormatField(inputObj)` | DOM 操作工具 |
+| `dateFieldChange(event)` | DOM 事件工具 |
+
+### Fallback
+
+| 原始函數 | 原因 |
+|---|---|
+| `isHoliday(day)` | 資料已過期（硬編碼 93-94 年假日清單），無法遷移 |
+| `getDutyDay(strDate, dudt, intMonth)` | 業務邏輯，依頁面原始碼自行翻新，可引用 `addDate` 實作 |
