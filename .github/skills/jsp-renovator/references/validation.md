@@ -8,8 +8,9 @@ validation.js 透過 HTML 元素的 `class` 屬性識別並驅動驗證規則，
 
 1. **validators**：識別頁面內所有 `Validation.add` / `Validation.addAllThese`，翻新為預定義 test 物件
 2. **schema**：識別頁面內所有 `new Validation()`，各自建立對應的 `object()` schema
-3. **useForm**：依頁面 `<form>` 元素，各自建立對應的 `useForm()`，並綁定 initialValues、 validationSchema 與錯誤訊息
-4. **表單送出與重置**：翻新所有表單送出與重置表單的函數結構
+3. **useForm**：依頁面 `<form>` 元素，各自建立對應的 `useForm()`，並綁定 initialValues、validationSchema 與錯誤訊息
+4. **useField**：表單內每個欄位各自以 `useField()` 宣告，取得雙向綁定的 `value` 與錯誤訊息 `errorMessage`
+5. **表單送出與重置**：翻新所有表單送出與重置表單的函數結構
 
 ---
 
@@ -148,19 +149,25 @@ const { errors, validate, resetForm, setValues } = useForm({
   initialValues: {
     /* 表單內部所有欄位都需定義初始值 */
     FIELD1: '', // string 欄位
-    FIELD2: 0, // number 欄位
+    FIELD2: 0,  // number 欄位
     FIELD3: [], // array 欄位
   },
   validateOnMount: false,
 })
 
 // 單一驗證群組
-const { errors, validate, resetForm, setValues } = useForm({
+const { errors, validate, resetForm } = useForm({
   validationSchema: valid1Schema,
   initialValues: { /* 表單內部所有欄位都需定義初始值 */ },
   validateOnMount: false,
 })
 ```
+
+---
+
+## R5-1. useField 定義
+
+**REQUIRED**：表單內每個欄位必須各自以 `const { value: fieldName } = useField('fieldName')` 宣告，取得可讀寫的 `value`
 
 ---
 
@@ -182,6 +189,11 @@ const onSubmit = async () => {
   const { valid } = await validate()
   if (!valid) return
   // 通過後的處理
+}
+
+// 清空表單
+const doClear = () => {
+  resetForm()
 }
 ```
 
@@ -268,7 +280,13 @@ const { errors, validate, resetForm } = useForm({
   validateOnMount: false,
 })
 
-// Step 4: handleSubmit
+// Step 4: useField
+const { value: NAME } = useField('NAME')
+const { value: START } = useField('START')
+const { value: END } = useField('END')
+const { value: EMAIL } = useField('EMAIL')
+
+// Step 5: handleSubmit / reset
 const doSubmit = async () => {
   currentValid.value = 'valid1'
   const { valid } = await validate()
@@ -283,7 +301,7 @@ const doQuery = async () => {
   // 通過後的處理
 }
 
-const doClear = async () => {
+const doClear = () => {
   resetForm()
 }
 ```

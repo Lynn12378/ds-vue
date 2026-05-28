@@ -335,6 +335,8 @@ const use{ResourceName} = () => {
 ### R2 規範輔助翻新
 - [ ] 所有 Server-side 注入語法已識別且無遺漏
 - [ ] 所有 R2-3 補全項目已標記 `// FIXME: Server-side 資料來源待確認`
+- [ ] 所有 `new Validation()` 已翻新為對應 `useForm()`，且驗證行為符合翻新指引
+- [ ] 所有表單欄位使用 `useField()` 宣告
 
 ### R3 自訂資源
 - [ ] 所有外部資源引用已識別並查找對應翻新指引
