@@ -4,7 +4,6 @@ description: 將單頁 Legacy JSP 翻新為 Vue 3 SFC
 argument-hint: >
   jsp=<JSP 檔案路徑>
   skipCM=<是否跳過查詢「舊有自訂依賴」的翻新指引文件，預設為 false>
-disable-model-invocation: true
 user-invocable: true
 ---
 
