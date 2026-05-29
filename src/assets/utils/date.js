@@ -1,628 +1,568 @@
-/**
- * date.js 工具函式遷移
- * 來源：CM/js/date.js
- */
-
-// ─── 內部輔助 ────────────────────────────────────────────────────────────────
+// ── 內部解析工具 ─────────────────────────────────────────────────────────────
 
 /**
- * 民國日期字串 → JS Date 物件
- * 支援格式：yMMdd、yyMMdd、yyyMMdd、y/MM/dd、yy/MM/dd、yyy/MM/dd、y-MM-dd、yy-MM-dd、yyy-MM-dd
+ * 解析民國日期字串，回傳 Date 物件與解析後的月、日
  * @param {string} srcData
- * @param {boolean} [isROCBefore=false] 是否允許民國前（負數年份，前綴 '-'）
- * @returns {Date|undefined}
+ * @param {boolean} [isROCBefore=false]
+ * @returns {{ date: Date, month: number, day: number } | null}
  */
-function _stringToDate_ROC(srcData, isROCBefore) {
-  let rocDateIsBefore = 1
+function _parseROCDate(srcData, isROCBefore = false) {
+  let str = srcData
+  let sign = 1
 
-  if (isROCBefore === true && srcData.substring(0, 1) === '-') {
-    srcData = srcData.substring(1)
-    rocDateIsBefore = -1
+  if (isROCBefore && str.startsWith('-')) {
+    str = str.slice(1)
+    sign = -1
   }
 
   const patterns = [
-    /^(\d{1})(\d{2})(\d{2})$/,
-    /^(\d{2})(\d{2})(\d{2})$/,
-    /^(\d{3})(\d{2})(\d{2})$/,
-    /^(\d{1})\/(\d{2})\/(\d{2})$/,
-    /^(\d{2})\/(\d{2})\/(\d{2})$/,
-    /^(\d{3})\/(\d{2})\/(\d{2})$/,
-    /^(\d{1})-(\d{2})-(\d{2})$/,
-    /^(\d{2})-(\d{2})-(\d{2})$/,
-    /^(\d{3})-(\d{2})-(\d{2})$/,
+    /^(\d{1,3})(\d{2})(\d{2})$/,
+    /^(\d{1,3})\/(\d{2})\/(\d{2})$/,
+    /^(\d{1,3})-(\d{2})-(\d{2})$/,
   ]
 
-  for (const p of patterns) {
-    const m = srcData.match(p)
-    if (m) {
-      return new Date(
-        rocDateIsBefore * parseInt(m[1], 10) + 1911,
-        parseInt(m[2], 10) - 1,
-        parseInt(m[3], 10)
-      )
-    }
+  for (const pattern of patterns) {
+    const match = str.match(pattern)
+    if (!match) continue
+    const year  = sign * parseInt(match[1], 10) + 1911
+    const month = parseInt(match[2], 10)
+    const day   = parseInt(match[3], 10)
+    return { date: new Date(year, month - 1, day), month, day }
   }
-  return undefined
+  return null
 }
 
 /**
- * 西元日期字串 → JS Date 物件
- * 支援格式：yyyyMMdd、yyyy/MM/dd、yyyy-MM-dd
+ * 解析西元日期字串，回傳 Date 物件與解析後的月、日
  * @param {string} srcData
- * @returns {Date|undefined}
+ * @returns {{ date: Date, month: number, day: number } | null}
  */
-function _stringToDate_Y2K(srcData) {
+function _parseY2KDate(srcData) {
   const patterns = [
     /^(\d{4})(\d{2})(\d{2})$/,
     /^(\d{4})\/(\d{2})\/(\d{2})$/,
     /^(\d{4})-(\d{2})-(\d{2})$/,
   ]
 
-  for (const p of patterns) {
-    const m = srcData.match(p)
-    if (m) {
-      return new Date(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10))
-    }
+  for (const pattern of patterns) {
+    const match = srcData.match(pattern)
+    if (!match) continue
+    const year  = parseInt(match[1], 10)
+    const month = parseInt(match[2], 10)
+    const day   = parseInt(match[3], 10)
+    return { date: new Date(year, month - 1, day), month, day }
   }
-  return undefined
+  return null
 }
 
-function _pad2(n) {
-  return n < 10 ? '0' + n : String(n)
-}
-
-// ─── Public Functions ────────────────────────────────────────────────────────
+// ── 日期格式驗證 ──────────────────────────────────────────────────────────────
 
 /**
- * 驗證民國日期字串
- * 支援格式：yyyMMdd、yyy/MM/dd、yyy-MM-dd（及 yy / y 開頭變體）
- * @param {string} srcData
- * @param {boolean} [yearLimit=true] 是否限制民國 20 年以後（含 000101）
- * @param {boolean} [isROCBefore=false] 是否允許民國前（負數年份）
+ * 驗證民國日期格式（支援 yyyMMdd / yyy/MM/dd / yyy-MM-dd）
+ * @param {string}  srcData
+ * @param {boolean} [yearLimit=true]    是否限制民國 20 年以後
+ * @param {boolean} [isROCBefore=false] 是否允許民國前日期（以 - 開頭）
  * @returns {boolean}
  */
-export function isROCdate(srcData, yearLimit, isROCBefore) {
-  const patterns = [
-    /^(\d{1})(\d{2})(\d{2})$/,
-    /^(\d{2})(\d{2})(\d{2})$/,
-    /^(\d{3})(\d{2})(\d{2})$/,
-    /^(\d{1})\/(\d{2})\/(\d{2})$/,
-    /^(\d{2})\/(\d{2})\/(\d{2})$/,
-    /^(\d{3})\/(\d{2})\/(\d{2})$/,
-    /^(\d{1})-(\d{2})-(\d{2})$/,
-    /^(\d{2})-(\d{2})-(\d{2})$/,
-    /^(\d{3})-(\d{2})-(\d{2})$/,
-  ]
+export function isROCdate(srcData, yearLimit = true, isROCBefore = false) {
+  const parsed = _parseROCDate(srcData, isROCBefore)
+  if (!parsed) return false
 
-  let matched = null
-  let checkSrc = srcData
-  let rocDateIsBefore = 1
-
-  if (isROCBefore === true && typeof srcData === 'string' && srcData[0] === '-') {
-    checkSrc = srcData.substring(1)
-    rocDateIsBefore = -1
-  }
-
-  for (const p of patterns) {
-    const m = checkSrc.match(p)
-    if (m) { matched = m; break }
-  }
-
-  if (!matched) return false
-
-  const year = rocDateIsBefore * parseInt(matched[1], 10) + 1911
-  const month = parseInt(matched[2], 10)
-  const day = parseInt(matched[3], 10)
-  const d = new Date(year, month - 1, day)
-
-  if (!d || d.getMonth() !== month - 1 || d.getDate() !== day) return false
+  const { date, month, day } = parsed
+  if (date.getMonth() !== month - 1 || date.getDate() !== day) return false
 
   if (yearLimit !== false) {
-    if (!(d.getFullYear() === 1911 && d.getMonth() === 0 && d.getDate() === 1) && d.getFullYear() < 1931) {
-      return false
-    }
+    const isOrigin = date.getFullYear() === 1911 && date.getMonth() === 0 && date.getDate() === 1
+    if (!isOrigin && date.getFullYear() < 1931) return false
   }
 
   return true
 }
 
 /**
- * 計算兩日期相差天數（date2 - date1）
- * @param {string} str1 日期1
- * @param {string} str2 日期2
- * @param {boolean} [isROC] 是否為民國格式，預設依 str1 格式自動判斷
- * @returns {number}
- */
-export function diffDay(str1, str2, isROC) {
-  let dateInt1, dateInt2
-
-  if (typeof isROC === 'undefined') {
-    dateInt1 = _stringToDate_Y2K(str1)
-    isROC = dateInt1 ? false : true
-  } else if (!isROC) {
-    dateInt1 = _stringToDate_Y2K(str1)
-  }
-
-  if (isROC) {
-    dateInt1 = _stringToDate_ROC(str1, true)
-    dateInt2 = _stringToDate_ROC(str2, true)
-  } else {
-    dateInt2 = _stringToDate_Y2K(str2)
-  }
-
-  return (dateInt2 - dateInt1) / 86400000
-}
-
-/**
- * 計算兩民國日期相差天數（date2 - date1）
- * @param {string} strRoc1
- * @param {string} strRoc2
- * @returns {number}
- */
-export function diffDayROC(strRoc1, strRoc2) {
-  return diffDay(strRoc1, strRoc2, true)
-}
-
-/**
- * 計算兩西元日期相差天數（date2 - date1）
- * @param {string} str1
- * @param {string} str2
- * @returns {number}
- */
-export function diffDayY2K(str1, str2) {
-  return diffDay(str1, str2, false)
-}
-
-/**
- * 西元日期（yyyy-MM-dd）→ 民國日期字串（yyyMMdd）
- * @param {string} Y2Kdate 格式必須為 yyyy-MM-dd（長度 10）
- * @returns {string}
- */
-export function toROC(Y2Kdate) {
-  if (!Y2Kdate || Y2Kdate.length !== 10) return ''
-  const roc = parseInt(Y2Kdate.substring(0, 4), 10) - 1911
-  return String(roc) + Y2Kdate.substring(5, 7) + Y2Kdate.substring(8, 10)
-}
-
-/**
- * 民國日期字串 → 西元日期（yyyy-MM-dd）
- * @param {string} ROCdate
- * @returns {string} 無法解析時回傳原始值
- */
-export function toY2K(ROCdate) {
-  const patterns = [
-    /^(\d{1})(\d{2})(\d{2})$/,
-    /^(\d{2})(\d{2})(\d{2})$/,
-    /^(\d{3})(\d{2})(\d{2})$/,
-    /^(\d{1})\/(\d{2})\/(\d{2})$/,
-    /^(\d{2})\/(\d{2})\/(\d{2})$/,
-    /^(\d{3})\/(\d{2})\/(\d{2})$/,
-    /^(\d{1})-(\d{2})-(\d{2})$/,
-    /^(\d{2})-(\d{2})-(\d{2})$/,
-    /^(\d{3})-(\d{2})-(\d{2})$/,
-  ]
-
-  for (const p of patterns) {
-    const m = ROCdate.match(p)
-    if (m) {
-      const year = parseInt(m[1], 10) + 1911
-      const d = new Date(year, parseInt(m[2], 10) - 1, parseInt(m[3], 10))
-      if (d.getMonth() !== parseInt(m[2], 10) - 1 || d.getDate() !== parseInt(m[3], 10)) {
-        return ROCdate
-      }
-      return `${d.getFullYear()}-${m[2]}-${m[3]}`
-    }
-  }
-  return ROCdate
-}
-
-/**
- * 判斷西元年份是否為閏年
- * @param {string|number} datInput 西元年份或 yyyy-MM-dd 字串
+ * 驗證西元日期格式（支援 yyyyMMdd / yyyy/MM/dd / yyyy-MM-dd）
+ * @param {string}  srcData
+ * @param {boolean} [yearLimit=true] 是否限制 1931 年以後
  * @returns {boolean}
  */
-export function isLeap(datInput) {
-  let intYY
-  if (typeof datInput === 'string') {
-    intYY = datInput.length > 4
-      ? parseInt(datInput.substring(0, 4), 10)
-      : parseInt(datInput, 10)
-  } else {
-    intYY = datInput
-  }
+export function isADdate(srcData, yearLimit = true) {
+  const parsed = _parseY2KDate(srcData)
+  if (!parsed) return false
 
-  if (intYY % 4 !== 0) return false
-  if (intYY % 100 !== 0) return true
-  return intYY % 400 === 0
-}
-
-/**
- * 日期加減，輸入輸出均為 yyyy-MM-dd
- * @param {string} strDate yyyy-MM-dd
- * @param {number} intYY 加減年數
- * @param {number} intMM 加減月數
- * @param {number} intDD 加減天數
- * @returns {string} yyyy-MM-dd，無法解析時回傳空字串
- */
-export function addDate(strDate, intYY, intMM, intDD) {
-  if (!strDate || strDate.length !== 10) return ''
-
-  const formatYear = parseInt(strDate.substr(0, 4), 10)
-  const formatMonth = parseInt(strDate.substr(5, 2), 10) - 1
-  const formatDate = parseInt(strDate.substr(8, 2), 10)
-
-  const d = new Date(formatYear, formatMonth, formatDate)
-
-  if (intYY !== 0) {
-    d.setFullYear(d.getFullYear() + intYY)
-    if (d.getDate() !== formatDate) {
-      d.setMonth(formatMonth)
-      d.setDate(formatDate - 1)
-    }
-  }
-
-  if (intMM !== 0) {
-    const tempDate = d.getDate()
-    d.setDate(1)
-    d.setMonth(d.getMonth() + intMM)
-    const tempMonth = d.getMonth()
-    d.setDate(tempDate)
-    if (tempMonth !== d.getMonth()) {
-      d.setDate(0)
-    }
-  }
-
-  if (intDD !== 0) {
-    d.setDate(d.getDate() + intDD)
-  }
-
-  const m = d.getMonth() + 1
-  const day = d.getDate()
-  return `${d.getFullYear()}-${_pad2(m)}-${_pad2(day)}`
-}
-
-/**
- * 取得今日西元日期
- * @returns {string} yyyy-MM-dd
- */
-export function getY2KToday() {
-  const d = new Date()
-  return `${d.getFullYear()}-${_pad2(d.getMonth() + 1)}-${_pad2(d.getDate())}`
-}
-
-/**
- * 取得今日民國日期
- * @returns {string} yyyMMdd
- */
-export function getToday() {
-  const d = new Date()
-  const roc = d.getFullYear() - 1911
-  return `${roc}${_pad2(d.getMonth() + 1)}${_pad2(d.getDate())}`
-}
-
-/**
- * 取得現在時刻
- * @returns {string} HHmmss
- */
-export function getTime() {
-  const d = new Date()
-  return `${_pad2(d.getHours())}${_pad2(d.getMinutes())}${_pad2(d.getSeconds())}`
-}
-
-/**
- * 驗證西元日期字串
- * 支援格式：yyyyMMdd、yyyy/MM/dd、yyyy-MM-dd
- * @param {string} srcData
- * @param {boolean} [yearLimit=true] 是否限制 1931 年以後（含 1911-01-01）
- * @returns {boolean}
- */
-export function isADdate(srcData, yearLimit) {
-  const d = _stringToDate_Y2K(srcData)
-  const patterns = [
-    /^(\d{4})(\d{2})(\d{2})$/,
-    /^(\d{4})\/(\d{2})\/(\d{2})$/,
-    /^(\d{4})-(\d{2})-(\d{2})$/,
-  ]
-
-  let month, day
-  for (const p of patterns) {
-    const m = srcData.match(p)
-    if (m) { month = parseInt(m[2], 10); day = parseInt(m[3], 10); break }
-  }
-
-  if (!d || d.getMonth() !== month - 1 || d.getDate() !== day) return false
+  const { date, month, day } = parsed
+  if (date.getMonth() !== month - 1 || date.getDate() !== day) return false
 
   if (yearLimit !== false) {
-    if (!(d.getFullYear() === 1911 && d.getMonth() === 0 && d.getDate() === 1) && d.getFullYear() < 1931) {
-      return false
-    }
+    const isOrigin = date.getFullYear() === 1911 && date.getMonth() === 0 && date.getDate() === 1
+    if (!isOrigin && date.getFullYear() < 1931) return false
   }
 
   return true
 }
 
+/** @alias isADdate */
+export { isADdate as isDate }
+
 /**
- * 驗證民國日期，月份允許 01-13（第 13 月視為 12 月）
- * @param {string} srcData
+ * 驗證民國 13 工作月日期格式
+ * @param {string}  srcData
  * @param {boolean} [yearLimit=true]
  * @returns {boolean}
  */
-export function isROC13Mdate(srcData, yearLimit) {
+export function isROC13Mdate(srcData, yearLimit = true) {
   const patterns = [
-    /^(\d{2})(\d{2})(\d{2})$/,
-    /^(\d{3})(\d{2})(\d{2})$/,
-    /^(\d{4})(\d{2})(\d{2})$/,
-    /^(\d{2})\/(\d{2})\/(\d{2})$/,
-    /^(\d{3})\/(\d{2})\/(\d{2})$/,
-    /^(\d{4})\/(\d{2})\/(\d{2})$/,
+    /^(\d{2,4})(\d{2})(\d{2})$/,
+    /^(\d{2,4})\/(\d{2})\/(\d{2})$/,
   ]
 
-  let month, day, d
-  for (const p of patterns) {
-    const m = srcData.match(p)
-    if (m) {
-      month = parseInt(m[2], 10)
-      day = parseInt(m[3], 10)
-      if (month === 13) month = 12
-      d = new Date(parseInt(m[1], 10) + 1911, month - 1, day)
-      break
-    }
+  let match = null
+  for (const pattern of patterns) {
+    match = srcData.match(pattern)
+    if (match) break
   }
+  if (!match) return false
 
-  if (!d || d.getMonth() !== month - 1 || d.getDate() !== day) return false
+  let month = parseInt(match[2], 10)
+  if (month === 13) month = 12
+
+  const date = new Date(parseInt(match[1], 10) + 1911, month - 1, parseInt(match[3], 10))
+  if (date.getMonth() !== month - 1 || date.getDate() !== parseInt(match[3], 10)) return false
 
   if (yearLimit !== false) {
-    if (!(d.getFullYear() === 1911 && d.getMonth() === 0 && d.getDate() === 1) && d.getFullYear() < 1931) {
-      return false
-    }
+    const isOrigin = date.getFullYear() === 1911 && date.getMonth() === 0 && date.getDate() === 1
+    if (!isOrigin && date.getFullYear() < 1931) return false
   }
 
   return true
 }
 
 /**
- * 驗證民國年月格式，月份允許 01-13
- * 支援格式：yyMM、yyyMM
+ * 驗證年月是否為民國年，且 01 <= 月份 <= 13
  * @param {string} srcData
  * @returns {boolean}
  */
 export function isROC13Month(srcData) {
-  const patterns = [/^(\d{2})(\d{2})$/, /^(\d{3})(\d{2})$/]
+  const match = srcData.match(/^(\d{2,3})(\d{2})$/)
+  if (!match) return false
 
-  let month, d
-  for (const p of patterns) {
-    const m = srcData.match(p)
-    if (m) {
-      month = parseInt(m[2], 10)
-      if (month === 13) month = 12
-      d = new Date(parseInt(m[1], 10) + 1911, month - 1, 1)
-      break
-    }
-  }
+  let month = parseInt(match[2], 10)
+  if (month === 13) month = 12
 
-  if (!d || d.getMonth() !== month - 1) return false
-  return true
+  const date = new Date(parseInt(match[1], 10) + 1911, month - 1, 1)
+  return date.getMonth() === month - 1
 }
 
 /**
- * 驗證民國年月日，月份允許 01-13，日期必須為 01
- * 支援格式：yyMMdd、yyyMMdd
- * @param {string} srcData
+ * 驗證民國年月，且月份 01–13，日必須為 01
+ * @param {string}  srcData
  * @param {boolean} [yearLimit=true]
  * @returns {boolean}
  */
-export function isROC13MonthFirstDay(srcData, yearLimit) {
-  const patterns = [/^(\d{2})(\d{2})(\d{2})$/, /^(\d{3})(\d{2})(\d{2})$/]
+export function isROC13MonthFirstDay(srcData, yearLimit = true) {
+  const match = srcData.match(/^(\d{2,3})(\d{2})(\d{2})$/)
+  if (!match) return false
 
-  let month, day, d
-  for (const p of patterns) {
-    const m = srcData.match(p)
-    if (m) {
-      month = parseInt(m[2], 10)
-      day = parseInt(m[3], 10)
-      if (day !== 1) return false
-      if (month === 13) month = 12
-      d = new Date(parseInt(m[1], 10) + 1911, month - 1, 1)
-      break
-    }
-  }
+  if (parseInt(match[3], 10) !== 1) return false
 
-  if (!d || d.getMonth() !== month - 1) return false
+  let month = parseInt(match[2], 10)
+  if (month === 13) month = 12
+
+  const date = new Date(parseInt(match[1], 10) + 1911, month - 1, 1)
+  if (date.getMonth() !== month - 1) return false
 
   if (yearLimit !== false) {
-    if (!(d.getFullYear() === 1911 && d.getMonth() === 0 && d.getDate() === 1) && d.getFullYear() < 1931) {
-      return false
-    }
+    const isOrigin = date.getFullYear() === 1911 && date.getMonth() === 0 && date.getDate() === 1
+    if (!isOrigin && date.getFullYear() < 1931) return false
   }
 
   return true
 }
 
 /**
- * 民國日期字串 → JS Date 物件（公開版）
- * @param {string} srcData
- * @param {boolean} [isROCBefore=false]
- * @returns {Date|undefined}
+ * 判斷是否為西元閏年
+ * @param {string|number} datInput 西元年份或 yyyy-MM-dd 字串
+ * @returns {boolean}
  */
-export function stringToDate_ROC(srcData, isROCBefore) {
-  return _stringToDate_ROC(srcData, isROCBefore)
+export function isLeap(datInput) {
+  const year = typeof datInput === 'string'
+    ? parseInt(datInput.length > 4 ? datInput.slice(0, 4) : datInput, 10)
+    : datInput
+
+  if (year % 4 !== 0) return false
+  if (year % 100 !== 0) return true
+  return year % 400 === 0
+}
+
+// ── 日期互轉 ──────────────────────────────────────────────────────────────────
+
+/**
+ * 民國日期字串轉 Date 物件
+ * @param {string}  srcData
+ * @param {boolean} [isROCBefore=false]
+ * @returns {Date | undefined}
+ */
+export function stringToDate_ROC(srcData, isROCBefore = false) {
+  return _parseROCDate(srcData, isROCBefore)?.date
 }
 
 /**
- * 西元日期字串 → JS Date 物件（公開版）
+ * 西元日期字串轉 Date 物件
  * @param {string} srcData
- * @returns {Date|undefined}
+ * @returns {Date | undefined}
  */
 export function stringToDate_Y2K(srcData) {
-  return _stringToDate_Y2K(srcData)
+  return _parseY2KDate(srcData)?.date
 }
 
 /**
- * 依 pattern 格式化日期字串
- *
- * locale:
- *   'tw'（預設）：民國年、中文月份星期
- *   'en'：西元年、英文月份星期
- *
- * pattern 符號：
- *   yyyy / yyy / yy / y  → 年（yyy/yy/y 依 locale 處理民國 / 末 2 碼）
- *   MMMM / MMM / MM / M  → 月
- *   dd / d               → 日
- *   EEEE / EEE / EE / E  → 星期
- *   HH / H               → 時（24h）
- *   hh / h               → 時（12h）
- *   mm / m               → 分
- *   ss / s               → 秒
- *
- * @param {string} pattern
- * @param {'tw'|'en'} [locale='tw']
+ * 西元日期轉民國日期（`yyyy-MM-dd` → `yyyMMdd`）
+ * @param {string} Y2Kdate
+ * @returns {string}
  */
-export function SimpleDateFormat(pattern, locale) {
-  const isTW = locale !== 'en'
-
-  const monthArray = isTW
-    ? ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
-    : ['January','February','March','April','May','June','July','August','September','October','November','December']
-
-  const weekArray = isTW
-    ? ['星期日','星期一','星期二','星期三','星期四','星期五','星期六']
-    : ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
-
-  const patternDefs = [
-    { key: 'yyyy', method: 'getFullYear' },
-    { key: 'yyy',  method: 'getFullYear', subLength: 3, isROC: isTW },
-    { key: 'yy',   method: 'getFullYear', subLength: 2, isROC: isTW },
-    { key: 'y',    method: 'getFullYear', subLength: 2, isROC: isTW },
-    { key: 'MMMM', method: 'getMonth', pad: true, isFull: true },
-    { key: 'MMM',  method: 'getMonth', pad: true },
-    { key: 'MM',   method: 'getMonth', pad: true },
-    { key: 'M',    method: 'getMonth', pad: false },
-    { key: 'dd',   method: 'getDate',  pad: true },
-    { key: 'd',    method: 'getDate',  pad: false },
-    { key: 'EEEE', method: 'getDay', isFull: true },
-    { key: 'EEE',  method: 'getDay' },
-    { key: 'EE',   method: 'getDay' },
-    { key: 'E',    method: 'getDay' },
-    { key: 'HH',   method: 'getHours',   pad: true },
-    { key: 'H',    method: 'getHours',   pad: false },
-    { key: 'hh',   method: 'getHours',   pad: true,  is12h: true },
-    { key: 'h',    method: 'getHours',   pad: false, is12h: true },
-    { key: 'mm',   method: 'getMinutes', pad: true },
-    { key: 'm',    method: 'getMinutes', pad: false },
-    { key: 'ss',   method: 'getSeconds', pad: true },
-    { key: 's',    method: 'getSeconds', pad: false },
-  ]
-
-  const pat = pattern || 'yyyy-MM-dd'
-
-  const groupUsed = {}
-  const groupOf = {
-    yyyy:'year',yyy:'year',yy:'year',y:'year',
-    MMMM:'month',MMM:'month',MM:'month',M:'month',
-    dd:'day',d:'day',
-    EEEE:'week',EEE:'week',EE:'week',E:'week',
-    HH:'hour',H:'hour',hh:'hour',h:'hour',
-    mm:'minute',m:'minute',
-    ss:'second',s:'second',
-  }
-
-  const tokens = []
-  for (const def of patternDefs) {
-    const idx = pat.indexOf(def.key)
-    if (idx < 0 || !groupOf[def.key] || groupUsed[groupOf[def.key]]) continue
-    groupUsed[groupOf[def.key]] = true
-    tokens.push({ ...def, index: idx })
-  }
-  tokens.sort((a, b) => a.index - b.index)
-
-  this.format = function (inDate) {
-    if (typeof inDate !== 'string' || inDate === '') return ''
-
-    let d
-    const datePatterns = [
-      /^(\d{4})(\d{2})(\d{2})$/,
-      /^(\d{4})\/(\d{2})\/(\d{2})$/,
-      /^(\d{4})-(\d{2})-(\d{2})$/,
-    ]
-    const tsPatterns = [
-      /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,
-      /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})[.\d]+$/,
-    ]
-
-    for (const p of datePatterns) {
-      const m = inDate.match(p)
-      if (m) { d = new Date(+m[1], +m[2]-1, +m[3]); break }
-    }
-    if (!d) {
-      for (const p of tsPatterns) {
-        const m = inDate.match(p)
-        if (m) { d = new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5], +m[6]); break }
-      }
-    }
-    if (!d) return inDate
-
-    let out = ''
-    for (let i = 0; i < tokens.length; i++) {
-      const t = tokens[i]
-      const prevEnd = i === 0 ? 0 : tokens[i-1].index + tokens[i-1].key.length
-
-      if (t.index > prevEnd) out += pat.substring(prevEnd, t.index)
-
-      let val = d[t.method]()
-
-      if (t.key === 'MMMM' || t.key === 'MMM') {
-        const mv = monthArray[val]
-        out += t.isFull ? mv : isTW ? mv.substring(0, mv.length - 1) : mv.substring(0, 3)
-        continue
-      }
-      if (['EEEE','EEE','EE','E'].includes(t.key)) {
-        const wv = weekArray[val]
-        out += t.isFull ? wv : isTW ? wv[wv.length-1] : wv.substring(0,3)
-        continue
-      }
-      if (t.key === 'MM' || t.key === 'M') val += 1
-      if (t.is12h && val > 12) val -= 12
-      if (t.isROC) val -= 1911
-      let str = String(val)
-      if (t.subLength > 0 && str.length > t.subLength) str = str.slice(-t.subLength)
-      if (t.pad && val < 10) str = '0' + str
-      out += str
-    }
-
-    const lastToken = tokens[tokens.length - 1]
-    if (lastToken) {
-      const lastEnd = lastToken.index + lastToken.key.length
-      if (lastEnd < pat.length) out += pat.substring(lastEnd)
-    }
-
-    return out
-  }
+export function toROC(Y2Kdate) {
+  if (Y2Kdate.length !== 10) return ''
+  const year = parseInt(Y2Kdate.slice(0, 4), 10) - 1911
+  return `${year}${Y2Kdate.slice(5, 7)}${Y2Kdate.slice(8, 10)}`
 }
+
+/**
+ * 民國日期轉西元日期（`yyyMMdd` → `yyyy-MM-dd`）
+ * @param {string} ROCdate
+ * @returns {string}
+ */
+export function toY2K(ROCdate) {
+  const parsed = _parseROCDate(ROCdate, true)
+  if (!parsed) return ROCdate
+
+  const { date, month, day } = parsed
+  if (date.getMonth() !== month - 1 || date.getDate() !== day) return ROCdate
+
+  const mm = String(month).padStart(2, '0')
+  const dd = String(day).padStart(2, '0')
+  return `${date.getFullYear()}-${mm}-${dd}`
+}
+
+/**
+ * 任意格式日期轉 DB 格式（`yyyy-MM-dd`）
+ * @param {string} inputDate
+ * @returns {string}
+ */
+export function toDBDate(inputDate) {
+  if (inputDate.length === 8) {
+    return `${inputDate.slice(0, 4)}-${inputDate.slice(4, 6)}-${inputDate.slice(6)}`
+  }
+  if (inputDate.length === 10 && !inputDate.includes('-')) {
+    return `${inputDate.slice(0, 4)}-${inputDate.slice(5, 7)}-${inputDate.slice(8)}`
+  }
+  return inputDate
+}
+
+// ── 日期計算 ──────────────────────────────────────────────────────────────────
+
+/**
+ * 計算兩日期相差天數（日期2 - 日期1）
+ * @param {string}  str1
+ * @param {string}  str2
+ * @param {boolean} [isROC] 未指定時依第一個參數格式判斷
+ * @returns {number}
+ */
+export function diffDay(str1, str2, isROC) {
+  let d1, d2
+
+  if (isROC === undefined) {
+    const parsed = _parseY2KDate(str1)
+    isROC = !parsed
+    d1 = isROC ? _parseROCDate(str1, true)?.date : parsed?.date
+  } else {
+    d1 = isROC ? _parseROCDate(str1, true)?.date : _parseY2KDate(str1)?.date
+  }
+
+  d2 = isROC ? _parseROCDate(str2, true)?.date : _parseY2KDate(str2)?.date
+  return (d2 - d1) / 86400000
+}
+
+/**
+ * 計算兩民國日期相差天數
+ * @param {string} strRoc1
+ * @param {string} strRoc2
+ * @returns {number}
+ */
+export const diffDayROC = (strRoc1, strRoc2) => diffDay(strRoc1, strRoc2, true)
+
+/**
+ * 計算兩西元日期相差天數
+ * @param {string} str1
+ * @param {string} str2
+ * @returns {number}
+ */
+export const diffDayY2K = (str1, str2) => diffDay(str1, str2, false)
+
+/**
+ * 日期加減（格式 `yyyy-MM-dd`）
+ * @param {string} strDate
+ * @param {number} intYY 加減年數
+ * @param {number} intMM 加減月數
+ * @param {number} intDD 加減天數
+ * @returns {string}
+ */
+export function addDate(strDate, intYY, intMM, intDD) {
+  if (!strDate || strDate.length !== 10) return ''
+
+  const year  = parseInt(strDate.slice(0, 4), 10)
+  const month = parseInt(strDate.slice(5, 7), 10) - 1
+  const day   = parseInt(strDate.slice(8, 10), 10)
+  const d = new Date(year, month, day)
+
+  if (intYY !== 0) {
+    d.setFullYear(d.getFullYear() + intYY)
+    if (d.getDate() !== day) {
+      d.setMonth(month)
+      d.setDate(day - 1)
+    }
+  }
+
+  if (intMM !== 0) {
+    const tempDay = d.getDate()
+    d.setDate(1)
+    d.setMonth(d.getMonth() + intMM)
+    const tempMonth = d.getMonth()
+    d.setDate(tempDay)
+    if (tempMonth !== d.getMonth()) d.setDate(0)
+  }
+
+  if (intDD !== 0) d.setDate(d.getDate() + intDD)
+
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${mm}-${dd}`
+}
+
+// ── 取得當日日期 / 時間 ───────────────────────────────────────────────────────
+
+/**
+ * 取得當日西元日期（`yyyy-MM-dd`）
+ * @returns {string}
+ */
+export function getY2KToday() {
+  const d = new Date()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${mm}-${dd}`
+}
+
+/**
+ * 取得當日民國日期（`yyyMMdd`）
+ * @returns {string}
+ */
+export function getToday() {
+  const d = new Date()
+  const yy = d.getFullYear() - 1911
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yy}${mm}${dd}`
+}
+
+/**
+ * 取得當前時間（`HHmmss`）
+ * @returns {string}
+ */
+export function getTime() {
+  const d = new Date()
+  return [d.getHours(), d.getMinutes(), d.getSeconds()]
+    .map(v => String(v).padStart(2, '0'))
+    .join('')
+}
+
+/**
+ * 取得含毫秒的 timestamp（`yyyy-MM-dd HH:mm:ss.SSS`）
+ * @returns {string}
+ */
+export function getCurrentTimeStamp() {
+  const d = new Date()
+  const date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+  const time = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`
+  const ms   = String(d.getMilliseconds()).padStart(3, '0')
+  return `${date} ${time}.${ms}`
+}
+
+/**
+ * 驗證是否為年月格式
+ * @param {string}  srcDate
+ * @param {boolean} [isROC=false]
+ * @returns {boolean}
+ */
+export function isDateYM(srcDate, isROC = false) {
+  const pattern = isROC
+    ? /^(\d{2,3})(0[1-9]|1[0-2])$/
+    : /^(\d{4})(0[1-9]|1[0-2])$/
+  return pattern.test(srcDate)
+}
+
+// ── 日期格式化 ────────────────────────────────────────────────────────────────
 
 SimpleDateFormat.TW = 'tw'
 SimpleDateFormat.US = 'en'
 
 /**
- * 取得當前 timestamp 字串
- * @returns {string} yyyy-MM-dd HH:mm:ss.SSS
+ * 日期格式化（對應原始 SimpleDateFormat，保留原始邏輯）
+ * @param {string} pattern 格式字串（yyyy, yyy, MM, dd, EEEE, HH, mm, ss 等）
+ * @param {string} locale  SimpleDateFormat.TW | SimpleDateFormat.US
  */
-export function getCurrentTimeStamp() {
-  const d = new Date()
-  const ms = d.getMilliseconds()
-  const msPad = ms < 10 ? '00' + ms : ms < 100 ? '0' + ms : String(ms)
-  return `${d.getFullYear()}-${_pad2(d.getMonth()+1)}-${_pad2(d.getDate())} ` +
-         `${_pad2(d.getHours())}:${_pad2(d.getMinutes())}:${_pad2(d.getSeconds())}.${msPad}`
+export function SimpleDateFormat(pattern = 'yyyy-MM-dd', locale) {
+  const isROC = locale !== SimpleDateFormat.US
+
+  const MONTHS_TW = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+  const MONTHS_US = ['January','February','March','April','May','June','July','August','September','October','November','December']
+  const WEEKS_TW  = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六']
+  const WEEKS_US  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+
+  const months = isROC ? MONTHS_TW : MONTHS_US
+  const weeks  = isROC ? WEEKS_TW  : WEEKS_US
+
+  const TOKENS = [
+    { key: 'yyyy', method: 'getFullYear' },
+    { key: 'yyy',  method: 'getFullYear', sub: 3, roc: isROC },
+    { key: 'yy',   method: 'getFullYear', sub: 2, roc: isROC },
+    { key: 'MMMM', method: 'getMonth',    pad: 1, full: true },
+    { key: 'MMM',  method: 'getMonth',    pad: 1 },
+    { key: 'MM',   method: 'getMonth',    pad: 1 },
+    { key: 'M',    method: 'getMonth',    pad: 0 },
+    { key: 'dd',   method: 'getDate',     pad: 1 },
+    { key: 'd',    method: 'getDate',     pad: 0 },
+    { key: 'EEEE', method: 'getDay',      full: true },
+    { key: 'EEE',  method: 'getDay' },
+    { key: 'EE',   method: 'getDay' },
+    { key: 'E',    method: 'getDay' },
+    { key: 'HH',   method: 'getHours',    pad: 1 },
+    { key: 'H',    method: 'getHours',    pad: 0 },
+    { key: 'hh',   method: 'getHours',    pad: 1, h12: true },
+    { key: 'h',    method: 'getHours',    pad: 0, h12: true },
+    { key: 'mm',   method: 'getMinutes',  pad: 1 },
+    { key: 'm',    method: 'getMinutes',  pad: 0 },
+    { key: 'ss',   method: 'getSeconds',  pad: 1 },
+    { key: 's',    method: 'getSeconds',  pad: 0 },
+  ]
+
+  const groups = { year:['yyyy','yyy','yy'], month:['MMMM','MMM','MM','M'], day:['dd','d'], week:['EEEE','EEE','EE','E'], hour:['HH','H','hh','h'], minute:['mm','m'], second:['ss','s'] }
+  const groupOf = Object.fromEntries(Object.entries(groups).flatMap(([g, ks]) => ks.map(k => [k, g])))
+
+  const used = new Set()
+  const active = TOKENS
+    .filter(t => {
+      const g = groupOf[t.key]
+      if (!g || used.has(g)) return false
+      const idx = pattern.indexOf(t.key)
+      if (idx < 0) return false
+      used.add(g)
+      return true
+    })
+    .map(t => ({ ...t, index: pattern.indexOf(t.key) }))
+    .sort((a, b) => a.index - b.index)
+
+  this.format = (inDate) => {
+    if (typeof inDate !== 'string' || inDate === '') return ''
+
+    let d
+    const dtMatch = inDate.match(/^(\d{4})-(\d{2})-(\d{2})(?: (\d{2}):(\d{2}):(\d{2}))?/)
+    if (!dtMatch) return inDate
+    d = dtMatch[4]
+      ? new Date(+dtMatch[1], +dtMatch[2]-1, +dtMatch[3], +dtMatch[4], +dtMatch[5], +dtMatch[6])
+      : new Date(+dtMatch[1], +dtMatch[2]-1, +dtMatch[3])
+
+    let out = ''
+    for (let i = 0; i < active.length; i++) {
+      const tok = active[i]
+      const prev = active[i - 1]
+      const from = prev ? prev.index + prev.key.length : 0
+      out += pattern.slice(from, tok.index)
+
+      let val = d[tok.method]()
+
+      if (tok.key === 'MMMM' || tok.key === 'MMM') {
+        let label = months[val]
+        if (tok.key === 'MMM') label = isROC ? label.slice(0, -1) : label.slice(0, 3)
+        out += label
+        continue
+      }
+      if (['EEEE','EEE','EE','E'].includes(tok.key)) {
+        let label = weeks[val]
+        if (!tok.full) label = isROC ? label.slice(-1) : label.slice(0, 3)
+        out += label
+        continue
+      }
+      if (['MM','M'].includes(tok.key)) val += 1
+      if (tok.h12 && val > 12) val -= 12
+      if (tok.roc) val -= 1911
+      let str = String(val)
+      if (tok.sub) str = str.slice(-tok.sub)
+      if (tok.pad && val < 10) str = '0' + str
+      out += str
+    }
+
+    const last = active[active.length - 1]
+    if (last) out += pattern.slice(last.index + last.key.length)
+    return out
+  }
+}
+
+// ── TODO 項目 ─────────────────────────────────────────────────────────────────
+
+/**
+ * 判斷是否為假日
+ * @todo 假日清單硬編碼 92–94 年（民國），資料已過期，需更新或改接外部資料來源
+ * @param {string} day 民國日期（`yyyMMdd`）
+ * @returns {boolean}
+ */
+export function isHoliday(day) {
+  const HOLIDAYS = new Set([
+    '921129','921130','921206','921207','921213','921214','921220','921221','921227','921228',
+    '930101','930103','930104','930110','930111','930117','930118','930121','930122','930123',
+    '930124','930125','930126','930131','930201','930207','930208','930214','930215','930221',
+    '930222','930228','930229','930306','930307','930313','930314','930320','930321','930327',
+    '930328','930403','930404','930410','930411','930417','930418','930424','930425','930501',
+    '930502','930508','930509','930515','930516','930522','930523','930529','930530','930605',
+    '930606','930612','930613','930619','930620','930622','930626','930627','930703','930704',
+    '930710','930711','930717','930718','930724','930725','930731','930801','930807','930808',
+    '930814','930815','930821','930822','930828','930829','930904','930905','930911','930912',
+    '930918','930919','930925','930926','930928','931002','931003','931009','931010','931016',
+    '931017','931023','931024','931030','931031','931106','931107','931113','931114','931120',
+    '931121','931127','931128','931204','931205','931211','931212','931218','931219','931225',
+    '931226','940101','940102','940108','940109','940115','940116','940122','940123','940129',
+    '940130','940206','940207','940208','940209','940210','940211','940212','940213','940219',
+    '940220','940226','940227','940228','940305','940306','940312','940313','940319','940320',
+    '940326','940327','940402','940403','940405','940409','940410','940416','940417','940423',
+    '940424','940430','940501','940502','940507','940508','940514','940515','940521','940522',
+    '940528','940529','940604','940605','940611','940612','940618','940619','940625','940626',
+    '940702','940703','940709','940710','940716','940717','940723','940724','940730','940731',
+    '940806','940807','940813','940814','940820','940821','940827','940828','940903','940904',
+    '940910','940911','940917','940918','940924','940925','941001','941002','941008','941009',
+    '941010','941015','941016','941022','941023','941029','941030','941105','941106','941112',
+    '941113','941119','941120','941126','941127',
+  ])
+  return HOLIDAYS.has(day)
 }
 
 /**
- * 驗證字串是否為年月格式
- * @param {string} srcDate
- * @param {boolean} isROC true：民國年月（yyyMM）；false：西元年月（yyyyMM）
- * @returns {boolean}
+ * 推算應繳日
+ * @todo 業務邏輯待確認，是否仍適用於新專案
+ * @param {string} strDate  基準日期（`yyyy-MM-dd`）
+ * @param {string} dudt     指定日（`dd`）
+ * @param {number} intMonth 加減月數
+ * @returns {string}
  */
-export function isDateYM(srcDate, isROC) {
-  const vp = isROC
-    ? /^(\d{2,3})(0[1-9]|1[0-2])$/
-    : /^(\d{4})(0[1-9]|1[0-2])$/
-  return vp.test(srcDate)
+export function getDutyDay(strDate, dudt, intMonth) {
+  const base    = `${strDate.slice(0, 8)}01`
+  const shifted = addDate(base, 0, intMonth, 0)
+  const mm      = parseInt(shifted.slice(5, 7), 10)
+  const dd      = parseInt(dudt, 10)
+  const prefix  = `${shifted.slice(0, 8)}`
+
+  if (dd <= 28) return `${prefix}${dudt}`
+  if (mm === 2) {
+    if (isLeap(shifted)) return `${prefix}${dd > 29 ? '29' : dudt}`
+    return `${prefix}${dd > 28 ? '28' : dudt}`
+  }
+  if ([4, 6, 9, 11].includes(mm) && dd > 30) return `${prefix}30`
+  if ([1, 3, 5, 7, 8, 10, 12].includes(mm) && dd > 31) return `${prefix}31`
+  return `${prefix}${dudt}`
 }

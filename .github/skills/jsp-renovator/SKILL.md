@@ -16,7 +16,7 @@ user-invocable: true
 
 ### Secondary
 - 將舊技術棧翻新為現代技術棧
-- 依循翻新指引處理**無等價技術棧**及**舊有自訂依賴（Custom Dependencies）**
+- 依循翻新指引處理**直接翻新**、**直接移除**、**需查翻新指引**、**TODO** 四類項目
 - 識別翻新指引未覆蓋的待翻新項目，建立 TODO 錨點以供後續處理
 
 ---
@@ -24,9 +24,10 @@ user-invocable: true
 ## Constraints
 ### Scope Boundaries
 **REQUIRED**：翻新範圍限定於單頁 Legacy JSP
-**REQUIRED**：僅可使用與此 SKILL 同層的 `references/` 作為翻新指引文件的來源
+**REQUIRED**：翻新指引來源僅限與此 SKILL 同層的 `references/`
+**REQUIRED**：產出必須符合與此 SKILL 同層的 `instructions/` 專案規範
 **FORBIDDEN**：禁止自行推論舊有自訂依賴的內部邏輯
-**FORBIDDEN**：禁止自行參照非轉換指引提供的外部檔案或資源
+**FORBIDDEN**：禁止自行參照非轉換指引提供的外部檔案或資源（R2 等價技術棧知識內建於 SKILL，不在此限）
 **FORBIDDEN**：禁止主動優化或簡化原始業務邏輯
 
 ### Technology Constraints
@@ -36,7 +37,7 @@ user-invocable: true
 **狀態管理**：Pinia
 **路由管理**：Vue Router
 **表單驗證**：VeeValidate（Composition API）+ Yup
-**HTTP 請求**：customAxios(`@/assets/plugins/customAxios.js`)
+**HTTP 請求**：customAxios（`@/assets/plugins/customAxios.js`）
 **日期處理**：Day.js
 
 ### Output Constraints
@@ -55,88 +56,81 @@ user-invocable: true
 
 ## Rules
 
-### R1：翻新項目
-**REQUIRED**：JSP 翻新項目分為四類：
-  - **等價技術棧**：新舊技術棧間存在直接對應關係，可直接翻新
-  - **無等價技術棧**：因新舊技術棧間無直接對應關係，需依翻新指引文件處理
-  - **舊有自訂依賴**：舊專案自訂的共用依賴，其內部邏輯為黑盒，因此需依翻新指引文件處理
-  - **直接移除**：因架構轉變而不再適用的項目，需直接移除
+### R1：翻新指引識別
+**REQUIRED**：依以下規則分析翻新項目對應的翻新指引來源：
+  - **直接翻新**：業務邏輯可見、無隱藏依賴，且有等價技術棧可直接對應，直接翻新（見 R2）
+  - **直接移除**：新專案不需要此機制，直接移除（見 R5）
+  - **需查翻新指引**：無直接對應關係，或為舊有自訂依賴，必須查閱對應翻新指引文件後決策（見 R3、R4）
+  - **TODO**：無翻新指引覆蓋，建立 TODO 錨點（見 R7）
 
 ---
 
-### R2：等價技術棧
-**REQUIRED**：新舊技術棧存在可直接對應關係的翻新項目，例如：
-  - JSTL core -> Vue template
-  - Prototype.js、JQuery DOM 操作 -> Vue 原生
-  - JQuery AJAX、Prototype.js Ajax、XMLHttpRequest -> customAxios
-  - inline Style、棄用 HTML 屬性 -> Vue template + `:style`
-  - `<form action="...">`、`window.location.href` -> Vue Router
-  - `${param.xxx}`、`request.getParameter('xxx')` -> `route.query.xxx`
+### R2：直接翻新項目
+**REQUIRED**：已有等價技術棧可直接翻新：
+
+| 原始語法 | 翻新對應 |
+|---|---|
+| JSTL core | Vue template |
+| Prototype.js、JQuery DOM 操作 | Vue 原生 |
+| JQuery AJAX、Prototype.js Ajax、XMLHttpRequest | customAxios（**endpoint**：`dispatch/{Bean_Name}/{action}` → `/api/{Bean_Name}/{action}`） |
+| inline Style、棄用 HTML 屬性 | Vue template + `:style` |
+| `<form action="...">`、`window.location.href` | `router.push({ name })`（**route name**：`{FileName}`） |
+| `${param.xxx}`、`request.getParameter('xxx')` | `route.query.xxx` |
+| `<input type="hidden">` | `ref` |
 
 ---
 
-### R3：無等價技術棧
-**REQUIRED**：新專案無直接對應的技術棧，包含但不限於：
+### R3：需查翻新指引 — 無等價技術棧
+**REQUIRED**：無直接對應技術棧，必須查閱對應翻新指引文件：
 
-```md
-| 舊技術棧 | 新技術棧 | 翻新指引文件索引 |
-|---------|---------|-------------|
-| Validation.js | VeeValidate（Composition API）+ Yup + Quasar Form | [表單驗證翻新指引](references/form-validation.md) |
-| Server-side 資料注入 | onMounted() + customAxios | [Server-side 資料注入翻新指引](references/server-data-injection.md) |
-```
+- **表單驗證**：[表單驗證翻新指引](references/form-validation.md)
+  - 識別語法：`Validation.add`、`Validation.addAllThese`、`new Validation()`
 
-**Server-side** 常見資料注入語法：
-  - EL：`${data}`
-  - `request.getAttribute('data')`
-  - `session.getAttribute('data')`
-  - `application.getAttribute('data')`
-  - `<%=data%>`
-
-**EXCEPTION**：**IF** `data` 來源為頁面內部宣告（`<c:set>`、`<c:forEach>` 迭代變數等）**THEN** 直接翻新（R2），不進入 Server-side 資料注入翻新指引流程
+- **Server-side 資料注入**：[Server-side 資料注入翻新指引](references/server-side.md)
+  - 識別語法：`${data}`、`request.getAttribute('data')`、`session.getAttribute('data')`、`application.getAttribute('data')`、`<%=data%>`
+  - **EXCEPTION**：**IF** `data` 來源為頁面內部宣告（`<c:set>`、`<c:forEach>` 迭代變數等）**THEN** 歸入 R2 直接翻新
 
 ---
 
-### R4. 舊有自訂依賴翻新指引
-- **IF** skipCM=true **THEN** 跳過所有「舊有自訂依賴」的翻新指引文件
-- **ELSE**：紀錄舊專案的自訂依賴來源的引用 pattern，以便對照同名的翻新指引文件：
-  - custom taglibs：`<%@ taglib prefix="{prefix}">` -> `references/tag/{prefix}.md`
-  - custom JavaScript：`<script src="{fileName}">` -> `references/js/{fileName}.js.md`
-  - custom JSP：`<%@ include file="{fileName}" %>` -> `references/jsp/{fileName}.jsp.md`
-  - custom CSS：`<link rel="stylesheet" ...>` -> 已於 main.js 中統一處理，頁面內不再額外引入
-  - 靜態資源：`<img src="{filePath}">` -> 直接註解 TODO，後續人工處理; **EXCEPTION**：`calendar.gif` -> `<q-icon name="event">`
+### R4：需查翻新指引 — 舊有自訂依賴
+**IF** `skipCM=true` **THEN** 跳過所有翻新指引文件，所有自訂依賴直接建立 TODO 錨點
+**ELSE**：查閱舊有自訂依賴對應翻新指引文件，依對照表完成翻新決策：
+  - **REQUIRED**：所有引用語法記錄路徑後移除；**EXCEPTION**：`<jsp:include>` 必須保留原佔位並標注 TODO
+  - **REQUIRED**：依下列 pattern 查找對應翻新指引文件：
+
+| 引用 pattern | 翻新指引文件路徑 |
+|---|---|
+| `<%@ taglib prefix="{prefix}">` | `references/tag/{prefix}.md` |
+| `<script src="{fileName}">` | `references/js/{fileName}.js.md` |
+| `<%@ include file="{fileName}" %>`、`<jsp:include page="{fileName}" />` | `references/jsp/{fileName}.jsp.md` |
+| `<link rel="stylesheet" ...>` | 已於 main.js 統一處理，直接移除 |
+| `<img src="{filePath}">` | TODO，後續人工處理；**EXCEPTION**：`calendar.gif` → `<q-icon name="event">` |
 
 ---
 
 ### R5：直接移除
-**REQUIRED**：因 JSP MPA -> Vue SPA 的架構轉變，以下項目將直接移除：
-  - HTML Root & Metadata，ex：`<html>`, `<head>`, `<body>`
-  - 引用語法，ex：`<%@ page ... %>`, `<%@ taglib ... %>`, `<%@ include ... %>`
+**REQUIRED**：新專案不需要的機制，直接移除：
+  - HTML Root & Metadata，ex：`<html>`, `<head>`, `<body>`, `<meta>`, `<title>`
 
 ---
 
-### R6：TODO 規則
+### R6：決策分類
+**REQUIRED**：依照翻新指引分析結果，將所有項目分為以下四類策略：
+  - **直接移除**：語法在新架構下完全消失，不需任何替代或佔位。對照表中翻新對應欄為 `—`
+  - **1:1 轉換**：單一原始語法 → 單一目標語法替換
+  - **1:N 轉換**：單一依賴涉及多個資源協同轉換，需一併處理所有參與語法
+  - **TODO**：暫未封裝、決策未定、或有替換方向但需人工實作。對照表中翻新對應欄為 `// TODO`
 
-**IF**：無等價技術棧（R3） **AND** 無對應翻新指引 **THEN** 註解 TODO 錨點以供後續人工處理
+---
 
-**IF**：`skipCM=true`：跳過所有「舊有自訂依賴」的翻新指引文件，直接建立 TODO 錨點以供後續人工處理
-**ELSE**：依照 pattern 查找對應的翻新指引文件
-  **IF**：有對應的翻新指引（R4） **THEN** 汰換舊有自訂依賴為翻新指引提供的對應轉換方案
-**ELSE**：未被翻新指引覆蓋的項目 **THEN** 建立 TODO 錨點以供後續人工處理
-
-**舊有自訂依賴**：指 JSP 專案提供的自訂依賴，包含但不限於
-  - JSP include，ex：`<%@ include file="{fileName}" %>`
-  - Custom Tag，ex：`<custom:tag ...>`
-  - 外部方法，ex：`someFunction()`
-  - 外部類別，ex：`new SomeClass()`、`SomeClass.someMethod()`、`SomeClass.someProperty`
-
-**TODO Composable**：
+### R7：TODO 錨點規則
 **REQUIRED**：依照自訂依賴的類型，建立對應的 TODO 錨點：
 
 ```vue
-/** JSP include：於原始位置註解 TODO */
-<!-- TODO: `<%@ include file="{fileName}" %>` -->
+<!-- <jsp:include>：保留原佔位，於原始位置標注 TODO -->
+<!-- TODO: `<jsp:include page="{fileName}" />` -->
 
-/** Custom Tag：於原始位置註解 TODO */
+<!-- Custom Tag：於原始位置標注 TODO -->
 <!-- TODO: `<custom:tag ...>` -->
 
 // region TODO
@@ -163,45 +157,47 @@ const use{ClassName} = (params) => {
 
 ### Phase 1: 翻新指引分析
 #### Step 1：掃描文件
-**REQUIRED**：識別 JSP 無等價技術棧及其對應的翻新指引文件（R3）
-**IF** skipCM=true **THEN** 跳過所有「舊有自訂依賴」的翻新指引文件
-**ELSE**：識別 JSP 中的舊有自訂依賴來源的引用是否有對應的翻新指引文件（R4）
+**REQUIRED**：依分析規則（R1–R5）掃描 JSP，識別所有項目的翻新來源類型
+**IF** `skipCM=true` **THEN** 跳過所有自訂依賴翻新指引文件
+**ELSE**：識別需查閱的翻新指引文件（R3、R4）
 
 #### Step 2：建立決策紀錄
-**REQUIRED**：根據掃描結果，建立決策紀錄，包含但不限於：
-  - 表單驗證群組 + 驗證欄位 + 驗證規則
-  - Server-side 資料與 API response 賦值
-  - 自訂依賴的具體汰換方案
+**REQUIRED**：查閱翻新指引後，依決策分類將所有項目分組記錄：
+
+- **直接移除**：列出所有直接移除項目
+- **1:1 轉換**：逐一列出原始呼叫與翻新對應
+- **1:N 轉換**：列出每個群組的完整觸發語法組合及翻新後封裝元件與 props 對應
+- **TODO**：列出所有無法自動翻新的項目與原因
 
 ---
 
 ### Phase 2: 翻新實作
-#### Step 1：註解 TODO 錨點
-**REQUIRED**：檢查是否存在翻新指引未覆蓋的項目：
-  - 無等價技術棧（R3）且無對應翻新指引文件
-  - 舊有自訂依賴（R4）且未被翻新指引決策覆蓋（skipCM=true 直接建立 TODO）
-**REQUIRED**：以對應的 TODO 錨點註解原始語法（R6）供後續人工處理
+#### Step 1：直接移除
+**REQUIRED**：依 R5 及決策分類，移除所有「直接移除」項目
 
-#### Step 2：直接翻新/移除
-**REQUIRED**：直接移除不再適用的項目（R5）
-**REQUIRED**：翻新等價技術棧（R2）
+#### Step 2：1:1 轉換
+**REQUIRED**：依決策紀錄，逐一完成所有 1:1 轉換
 
-#### Step 3：依翻新指引實作決策
-**REQUIRED**：基於分析階段的決策將舊技術棧、舊有自訂依賴汰換為翻新指引提供的對應轉換方案
+#### Step 3：1:N 轉換
+**REQUIRED**：依決策紀錄，處理所有 1:N 群組轉換
+**REQUIRED**：每個群組的所有觸發語法必須一併替換，不得遺漏
+
+#### Step 4：TODO 錨點
+**REQUIRED**：依 R7 規則，為所有 TODO 項目建立對應的 TODO 錨點
 
 ---
 
 ### Phase 3: 驗證與結論紀錄
 #### Step 1：檢驗翻新結果
 **REQUIRED**：驗證翻新結果，確保 Evaluation Checklist 中的項目皆符合要求
-**IF**：若有違規項目，根據違規類型回到對應的翻新規則（R1-R6）進行修正
-**ELSE**：若無違規項目，則建立 Vue SFC 並加入路由管理
+**IF** 有違規項目 **THEN** 根據違規類型回到對應的規則（R1–R7）進行修正
+**ELSE** 建立 Vue SFC 並加入路由管理
 
 #### Step 2：輸出翻新結果
-**REQUIRED**：以結構化的表格或清單形式輸出翻新結果於對話視窗，包含但不限於：
+**REQUIRED**：以結構化的表格或清單形式輸出翻新結果於對話視窗，包含：
+  - 四類決策分組清單
   - 表單驗證群組 + 驗證欄位 + 驗證規則
   - Server-side 資料與 API response 賦值
-  - 自訂依賴的具體汰換方案
   - TODO 錨點列表與對應的待處理項目描述
 
 **FORBIDDEN**：禁止生成分析報告或任何輔助文件，所有輸出應直接呈現在對話視窗中
@@ -215,24 +211,17 @@ const use{ClassName} = (params) => {
   - [ ] Vue SFC 無語法錯誤
   - [ ] 翻新結果以結構化的表格或清單形式呈現於對話視窗
 
-### R2 等價技術棧
-  - [ ] 所有等價技術棧項目皆已翻新
-  - [ ] 翻新後的技術棧符合 Vue 3 SFC 的最佳實踐
+### 分析與決策
+  - [ ] 所有翻新項目皆已依 R1 識別分類
+  - [ ] R2 直接翻新項目皆已正確對應
+    - [ ] API endpoint 已正確轉換
+    - [ ] 路由跳轉已正確對應
+  - [ ] R3 無等價技術棧項目皆已查閱對應翻新指引
+  - [ ] R4 自訂依賴皆已查閱對應翻新指引（或 `skipCM=true` 時直接建立 TODO）
+  - [ ] R5 所有「直接移除」項目皆已移除
+  - [ ] R6 所有項目皆已依四類策略完成決策分組
 
-### R3 無等價技術棧
-  - [ ] 所有無等價技術棧項目皆已依翻新指引處理或註解 TODO 錨點
-  - [ ] 表單驗證群組 + 驗證欄位 + 驗證規則皆已正確識別並翻新
-  - [ ] Server-side 資料與 API response 賦值皆已正確識別並翻新
-
-### R4 舊有自訂依賴翻新指引
-  - [ ] **IF** skipCM=true **THEN** 所有「舊有自訂依賴」項目皆已註解 TODO 錨點
-  - [ ] **ELSE** 所有「舊有自訂依賴」項目皆已依分析決策翻新或註解 TODO 錨點
-
-### R5 直接移除項目
-  - [ ] 所有 HTML Root & Metadata 已移除
-  - [ ] 所有引用語法已移除
-
-### R6 TODO 規則
-  - [ ] 所有無等價技術棧且無對應翻新指引的項目皆已註解 TODO 錨點
-  - [ ] 所有未被決策覆蓋的舊有自訂依賴項目皆已依規則註解 TODO 錨點
+### 翻新實作
+  - [ ] 所有「直接移除」項目已先於 1:1 / 1:N 轉換處理
+  - [ ] 1:N 群組轉換已先於 1:1 轉換處理
   - [ ] 所有 TODO 錨點皆保留原始語法作為追蹤依據
