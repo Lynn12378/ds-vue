@@ -111,6 +111,82 @@ const buildRows = (queryType = '1') => ([
   }
 ])
 
+const safeJsonParse = (val, fallback = {}) => {
+  if (!val || typeof val !== 'string') return fallback
+  try {
+    return JSON.parse(val)
+  } catch {
+    return fallback
+  }
+}
+
+const matchText = (source, keyword) => {
+  if (!keyword) return true
+  return String(source || '').includes(String(keyword).trim())
+}
+
+const normalizeReqMap = (body = {}) => {
+  if (body.reqMap && typeof body.reqMap === 'object') return body.reqMap
+  if (typeof body.reqMap === 'string') return safeJsonParse(body.reqMap, {})
+  return body
+}
+
+const filterRows = (rows, reqMap = {}) => {
+  return rows.filter((row) => {
+    if (!matchText(row.APPLY_ID, reqMap.APPLY_ID)) return false
+    if (!matchText(row.ADDRESS, reqMap.CITY)) return false
+    if (!matchText(row.ADDRESS, reqMap.TOWN)) return false
+    if (!matchText(row.ADDRESS, reqMap.ADDR_NO)) return false
+    if (!matchText(row.CASE_NAME, reqMap.CASE_NAME)) return false
+
+    if (reqMap.USE_FOR && reqMap.USE_FOR !== '0' && !matchText(row.USE_FOR_NM, reqMap.USE_FOR)) {
+      return false
+    }
+
+    if (reqMap.BUILD_AGE1 !== '' && reqMap.BUILD_AGE1 != null) {
+      if (Number(row.BUILD_AGE) < Number(reqMap.BUILD_AGE1)) return false
+    }
+
+    if (reqMap.BUILD_AGE2 !== '' && reqMap.BUILD_AGE2 != null) {
+      if (Number(row.BUILD_AGE) > Number(reqMap.BUILD_AGE2)) return false
+    }
+
+    return true
+  })
+}
+
+const getAreaCodeResult = (reqMap = {}) => {
+  const key = `${reqMap.CITY || ''}${reqMap.TOWN || ''}`
+  const areaCodeByRegion = {
+    台北市中正區: {
+      SUBMKT_NAME: '台北都會核心生活圈',
+      AREA_CODE_930318: 'A01',
+      MEMO: '此區域屬於優先承作範圍'
+    },
+    新北市板橋區: {
+      SUBMKT_NAME: '新北板橋都心生活圈',
+      AREA_CODE_930318: 'B03',
+      MEMO: '承作分區需留意建物使用分區'
+    }
+  }
+
+  if (areaCodeByRegion[key]) return areaCodeByRegion[key]
+
+  if (reqMap.LONGITUDE && reqMap.LATITUDE) {
+    return {
+      SUBMKT_NAME: '座標查詢生活圈',
+      AREA_CODE_930318: 'C99',
+      MEMO: '依經緯度估算，請再確認門牌資訊'
+    }
+  }
+
+  return {
+    SUBMKT_NAME: '',
+    AREA_CODE_930318: '',
+    MEMO: '查無對應承作分區資料'
+  }
+}
+
 const townListByCity = {
   台北市: [{ TOWN_NAME: '中正區' }, { TOWN_NAME: '大安區' }, { TOWN_NAME: '信義區' }],
   新北市: [{ TOWN_NAME: '板橋區' }, { TOWN_NAME: '新店區' }, { TOWN_NAME: '三重區' }],
@@ -145,18 +221,30 @@ const register = (method, pathName, handler) => {
 }
 
 const registerBeanRoutes = (beanName) => {
-  register('POST', `/${beanName}/promptQuery`, () => success({ rtnList: buildRows('1') }))
-  register('POST', `/${beanName}/query`, () => success({ rtnList: buildRows('1') }))
-  register('POST', `/${beanName}/landQuery`, () => success({ rtnList: buildRows('2') }))
-  register('POST', `/${beanName}/groupQuery`, () => success({ rtnList: buildRows('3') }))
-  register('POST', `/${beanName}/communityQuery`, () => success({ rtnList: buildRows('4') }))
-  register('POST', `/${beanName}/areacodeQuery`, () => success({
-    rtnMap: {
-      SUBMKT_NAME: '台北都會核心生活圈',
-      AREA_CODE_930318: 'A01',
-      MEMO: '此區域屬於優先承作範圍'
-    }
-  }))
+  register('POST', `/${beanName}/promptQuery`, (body) => {
+    const reqMap = normalizeReqMap(body)
+    return success({ rtnList: filterRows(buildRows('1'), reqMap) })
+  })
+  register('POST', `/${beanName}/query`, (body) => {
+    const reqMap = normalizeReqMap(body)
+    return success({ rtnList: filterRows(buildRows('1'), reqMap) })
+  })
+  register('POST', `/${beanName}/landQuery`, (body) => {
+    const reqMap = normalizeReqMap(body)
+    return success({ rtnList: filterRows(buildRows('2'), reqMap) })
+  })
+  register('POST', `/${beanName}/groupQuery`, (body) => {
+    const reqMap = normalizeReqMap(body)
+    return success({ rtnList: filterRows(buildRows('3'), reqMap) })
+  })
+  register('POST', `/${beanName}/communityQuery`, (body) => {
+    const reqMap = normalizeReqMap(body)
+    return success({ rtnList: filterRows(buildRows('4'), reqMap) })
+  })
+  register('POST', `/${beanName}/areacodeQuery`, (body) => {
+    const reqMap = normalizeReqMap(body)
+    return success({ rtnMap: getAreaCodeResult(reqMap) })
+  })
   register('POST', `/${beanName}/getTOWN_LIST`, (body) => {
     const cityName = body?.CITY_NAME
     return success({ TOWN_LIST: townListByCity[cityName] || [] })
@@ -167,10 +255,24 @@ register('GET', '/DSA3_0900/prompt', () => promptData())
 registerBeanRoutes('DSA3_0900')
 registerBeanRoutes('DSA3_2400')
 
-register('POST', '/DSA3_2400/queryByDSA3_0900', () => success({ rtnList: buildRows('1') }))
-register('POST', '/DSA3_2400/landQueryByDSA3_0900', () => success({ rtnList: buildRows('2') }))
-register('POST', '/DSA3_2400/groupQueryByDSA3_0900', () => success({ rtnList: buildRows('3') }))
-register('POST', '/DSA3_2400/communityQueryByDSA3_0900', () => success({ rtnList: buildRows('4') }))
+register('POST', '/DSA3_2400/queryByDSA3_0900', (body) => {
+  const reqMap = normalizeReqMap(body)
+  return success({ rtnList: filterRows(buildRows('1'), reqMap) })
+})
+register('POST', '/DSA3_2400/landQueryByDSA3_0900', (body) => {
+  const reqMap = normalizeReqMap(body)
+  return success({ rtnList: filterRows(buildRows('2'), reqMap) })
+})
+register('POST', '/DSA3_2400/groupQueryByDSA3_0900', (body) => {
+  const reqMap = normalizeReqMap(body)
+  return success({ rtnList: filterRows(buildRows('3'), reqMap) })
+})
+register('POST', '/DSA3_2400/communityQueryByDSA3_0900', (body) => {
+  const reqMap = normalizeReqMap(body)
+  return success({ rtnList: filterRows(buildRows('4'), reqMap) })
+})
+
+register('GET', '/health', () => success({ service: 'mockserver', status: 'up' }))
 
 const server = http.createServer(async (req, res) => {
   if (!req.url || !req.method) {
@@ -209,6 +311,16 @@ const server = http.createServer(async (req, res) => {
       }
     }))
   }
+})
+
+server.on('error', (error) => {
+  if (error?.code === 'EADDRINUSE') {
+    console.error(`[mockserver] port ${PORT} is already in use. Use MOCK_PORT to switch port, e.g. MOCK_PORT=8081 npm run mock`)
+    process.exit(1)
+  }
+
+  console.error('[mockserver] server error:', error)
+  process.exit(1)
 })
 
 server.listen(PORT, () => {
